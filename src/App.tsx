@@ -184,13 +184,17 @@ export default function App() {
   const [isHeaderDropdownOpen, setIsHeaderDropdownOpen] = useState(false);
   const [isSendDropdownOpen, setIsSendDropdownOpen] = useState(false);
   const [isRemindDropdownOpen, setIsRemindDropdownOpen] = useState(false);
-  const [activeView, setActiveView] = useState<'overview' | 'team' | 'tasks' | 'templates' | 'recipients' | 'benefits' | 'payroll' | 'finance'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'team' | 'tasks' | 'templates' | 'recipients' | 'benefits' | 'payroll' | 'finance' | 'talent' | 'it'>('overview');
   const [benefitsTab, setBenefitsTab] = useState<'overview' | 'documents'>('overview');
   const [benefitsSidebarItem, setBenefitsSidebarItem] = useState('Benefits Overview');
   const [payrollTab, setPayrollTab] = useState<'overview' | 'documents'>('overview');
   const [payrollSidebarItem, setPayrollSidebarItem] = useState('Payroll Overview');
   const [financeTab, setFinanceTab] = useState<'overview' | 'documents'>('overview');
   const [financeSidebarItem, setFinanceSidebarItem] = useState('Finance Overview');
+  const [talentTab, setTalentTab] = useState<'overview' | 'documents'>('overview');
+  const [talentSidebarItem, setTalentSidebarItem] = useState('Talent Overview');
+  const [itTab, setItTab] = useState<'overview' | 'documents'>('overview');
+  const [itSidebarItem, setItSidebarItem] = useState('IT Overview');
   const [isInsightBannerVisible, setIsInsightBannerVisible] = useState(true);
   const [selectedEnvelopeId, setSelectedEnvelopeId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -430,13 +434,15 @@ export default function App() {
             {activeView === 'benefits' ? <Heart size={16} className="text-white" />
               : activeView === 'payroll' ? <DollarSign size={16} className="text-white" />
               : activeView === 'finance' ? <CreditCard size={16} className="text-white" />
+              : activeView === 'talent' ? <Award size={16} className="text-white" />
+              : activeView === 'it' ? <Monitor size={16} className="text-white" />
               : <span className="text-white font-bold text-xl">R</span>
             }
           </div>
           {!isSidebarCollapsed && (
             <div className="flex items-center justify-between flex-1 overflow-hidden">
               <button className="font-bold text-lg truncate hover:text-gray-600 transition-colors" onClick={() => setIsHeaderDropdownOpen(!isHeaderDropdownOpen)}>
-                {activeView === 'benefits' ? 'Benefits' : activeView === 'payroll' ? 'Payroll' : activeView === 'finance' ? 'Finance' : 'Documents'}
+                {activeView === 'benefits' ? 'Benefits' : activeView === 'payroll' ? 'Payroll' : activeView === 'finance' ? 'Finance' : activeView === 'talent' ? 'Talent' : activeView === 'it' ? 'IT' : 'Documents'}
               </button>
               <button className="text-gray-400 hover:text-gray-600" onClick={() => setIsHeaderDropdownOpen(!isHeaderDropdownOpen)}>
                 <ChevronDown size={16} />
@@ -479,7 +485,7 @@ export default function App() {
                     { icon: Users, label: 'HR', hasChevron: true },
                     { icon: GitBranch, label: 'Custom Apps', hasChevron: true },
                   ].map(item => (
-                    <button key={item.label} onClick={() => { setIsHeaderDropdownOpen(false); if (item.label === 'Benefits') { setActiveView('benefits'); setBenefitsTab('overview'); } else if (item.label === 'Payroll') { setActiveView('payroll'); setPayrollTab('overview'); } else if (item.label === 'Finance') { setActiveView('finance'); setFinanceTab('overview'); } else if (item.label === 'Documents') { setActiveView('overview'); } }} className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
+                    <button key={item.label} onClick={() => { setIsHeaderDropdownOpen(false); if (item.label === 'Benefits') { setActiveView('benefits'); setBenefitsTab('overview'); } else if (item.label === 'Payroll') { setActiveView('payroll'); setPayrollTab('overview'); setPayrollSidebarItem('Payroll Overview'); } else if (item.label === 'Finance') { setActiveView('finance'); setFinanceTab('overview'); setFinanceSidebarItem('Finance Overview'); } else if (item.label === 'Talent') { setActiveView('talent'); setTalentTab('overview'); setTalentSidebarItem('Talent Overview'); } else if (item.label === 'IT') { setActiveView('it'); setItTab('overview'); setItSidebarItem('IT Overview'); } else if (item.label === 'Documents') { setActiveView('overview'); } }} className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
                       <span className="flex items-center gap-3">
                         <item.icon size={16} className="text-gray-500 shrink-0" />
                         {item.label}
@@ -512,8 +518,8 @@ export default function App() {
           </AnimatePresence>
         </div>
 
-        {activeView === 'benefits' || activeView === 'payroll' || activeView === 'finance' ? (
-          /* ── Product Sidebar Nav (Benefits / Payroll / Finance) ── */
+        {activeView === 'benefits' || activeView === 'payroll' || activeView === 'finance' || activeView === 'talent' || activeView === 'it' ? (
+          /* ── Product Sidebar Nav ── */
           (() => {
             const productConfig = activeView === 'benefits' ? {
               topItems: ['Benefits Overview', 'My Benefits'],
@@ -529,6 +535,20 @@ export default function App() {
               setActiveItem: setPayrollSidebarItem,
               tab: payrollTab,
               setTab: setPayrollTab,
+            } : activeView === 'talent' ? {
+              topItems: ['Talent Overview'],
+              bottomItems: ['Recruiting', 'Headcount Planning', 'Review Cycles', '1:1s', 'Goals', 'Learning Management', 'Surveys', 'Compensation Bands'],
+              activeItem: talentSidebarItem,
+              setActiveItem: setTalentSidebarItem,
+              tab: talentTab,
+              setTab: setTalentTab,
+            } : activeView === 'it' ? {
+              topItems: ['IT Overview'],
+              bottomItems: ['People', 'Third-Party Access', 'Devices', 'Device Store'],
+              activeItem: itSidebarItem,
+              setActiveItem: setItSidebarItem,
+              tab: itTab,
+              setTab: setItTab,
             } : {
               topItems: ['Finance Overview', 'My Finances'],
               bottomItems: ['Tasks', 'Travel', 'Cards', 'Reimbursements', 'Expense reports', 'Bills', 'Transactions', 'Statements', 'Accounting', 'People', 'Vendors', 'Policies'],
@@ -1515,6 +1535,217 @@ export default function App() {
                           <thead><tr className="bg-gray-50 border-b border-gray-200"><th style={{width:'24%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Document</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Employee</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Envelope</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tag</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th><th style={{width:'14%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last Update</th></tr></thead>
                           <tbody className="divide-y divide-gray-100">
                             {financeDocs.map((row, i) => { const s = statusCfg[row.docStatus] ?? statusCfg['Pending']; const env = row.envelopeId ? envelopeData[row.envelopeId] : null; return (
+                              <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                                <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-[#7A005D]/10 flex items-center justify-center shrink-0"><FileText size={15} className="text-[#7A005D]" /></div><div className="min-w-0 flex-1 overflow-hidden"><p className="text-xs font-semibold text-gray-900 truncate">{row.doc}</p><p className="text-[10px] text-gray-400 mt-0.5">{row.docId}</p></div></div></td>
+                                <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shrink-0"><img src={`https://picsum.photos/seed/user${row.avatar}/100/100`} alt={row.employee} className="w-full h-full object-cover" referrerPolicy="no-referrer" /></div><div className="min-w-0 overflow-hidden"><p className="text-xs font-bold text-gray-900 truncate">{row.employee}</p><p className="text-[10px] text-gray-500 truncate">{row.role}</p></div></div></td>
+                                <td className="px-6 py-4 overflow-hidden">{env ? <span className="text-xs font-medium text-[#7A005D] truncate block">{env.name}</span> : <span className="text-xs text-gray-300">—</span>}</td>
+                                <td className="px-6 py-4 overflow-hidden"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-600">{row.tag}</span></td>
+                                <td className="px-6 py-4 overflow-hidden"><span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${s.bg} ${s.text}`}><span className={`w-1.5 h-1.5 rounded-full shrink-0 ${s.dot}`} /><span className="truncate">{row.docStatus}</span></span></td>
+                                <td className="px-6 py-4 overflow-hidden"><p className="text-xs font-semibold text-gray-700">{row.lastUpdate}</p><p className="text-[10px] text-gray-400 mt-0.5">{updateLabel[row.lastUpdateState]}</p></td>
+                              </tr>
+                            ); })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })()
+              )}
+            </div>
+
+          ) : activeView === 'talent' ? (
+            /* ══════════════ TALENT VIEW ══════════════ */
+            <div className="space-y-6">
+              {talentTab === 'overview' ? (
+                <>
+                  <h1 className="text-xl font-bold text-gray-900">Talent Overview</h1>
+
+                  <div className="flex items-center gap-0 border-b border-gray-200 -mt-2">
+                    {['Overview', 'Notifications', 'Tasks'].map((tab, idx) => (
+                      <button key={tab} className={`relative px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors ${idx === 0 ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}>
+                        {tab}
+                        {idx === 0 && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 rounded-t-full" />}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {['My interviews', 'My headcount', 'My 1:1s', 'Review Cycles', 'Goals', 'Learning', 'Surveys'].map((pill, idx) => (
+                      <button key={pill} className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${idx === 0 ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+                        {pill}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Today's interviews */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-5">
+                    <h3 className="text-sm font-bold text-gray-900 mb-4">Today's interviews</h3>
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Candidate <ChevronDown size={10} className="inline ml-1 text-gray-400" /></th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Job and stage <ChevronDown size={10} className="inline ml-1 text-gray-400" /></th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Interview time <ChevronDown size={10} className="inline ml-1 text-gray-400" /></th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Interviewer(s)</th>
+                        </tr>
+                      </thead>
+                    </table>
+                    <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                      <CheckCircle2 size={28} className="mb-2 text-gray-300" />
+                      <p className="text-sm">You do not have any interviews scheduled today.</p>
+                    </div>
+                  </div>
+
+                  {/* Pending my feedback */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-5">
+                    <h3 className="text-sm font-bold text-gray-900 mb-4">Pending my feedback</h3>
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Candidate <ChevronDown size={10} className="inline ml-1 text-gray-400" /></th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Job and stage <ChevronDown size={10} className="inline ml-1 text-gray-400" /></th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Interview time <ChevronDown size={10} className="inline ml-1 text-gray-400" /></th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Feedback form due <ChevronDown size={10} className="inline ml-1 text-gray-400" /></th>
+                        </tr>
+                      </thead>
+                    </table>
+                    <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                      <CheckCircle2 size={28} className="mb-2 text-gray-300" />
+                      <p className="text-sm">You do not have any pending feedback requests.</p>
+                    </div>
+                  </div>
+
+                  {/* Upcoming interviews */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-5">
+                    <h3 className="text-sm font-bold text-gray-900 mb-4">Upcoming interviews</h3>
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Candidate <ChevronDown size={10} className="inline ml-1 text-gray-400" /></th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Job and stage <ChevronDown size={10} className="inline ml-1 text-gray-400" /></th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Interview time <ChevronDown size={10} className="inline ml-1 text-gray-400" /></th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Interviewer(s)</th>
+                        </tr>
+                      </thead>
+                    </table>
+                    <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                      <CheckCircle2 size={28} className="mb-2 text-gray-300" />
+                      <p className="text-sm">You do not have any upcoming interviews scheduled.</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                (() => {
+                  const talentDocs = documentData.filter(row => row.category === 'Recruiting');
+                  const statusCfg: Record<string, { dot: string; text: string; bg: string }> = { Signed: { dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50' }, Pending: { dot: 'bg-orange-500', text: 'text-orange-700', bg: 'bg-orange-50' }, Expired: { dot: 'bg-red-500', text: 'text-red-700', bg: 'bg-red-50' }, Archived: { dot: 'bg-gray-400', text: 'text-gray-600', bg: 'bg-gray-100' }, Uploaded: { dot: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50' } };
+                  const updateLabel: Record<string, string> = { sent: 'Sent', opened: 'Last opened', signed: 'Signed' };
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2"><h2 className="text-lg font-bold text-gray-900">Documents</h2><span className="text-xs text-gray-400 font-medium">{talentDocs.length}</span></div>
+                      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                        <table className="w-full text-left border-collapse table-fixed">
+                          <thead><tr className="bg-gray-50 border-b border-gray-200"><th style={{width:'24%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Document</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Employee</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Envelope</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tag</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th><th style={{width:'14%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last Update</th></tr></thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {talentDocs.map((row, i) => { const s = statusCfg[row.docStatus] ?? statusCfg['Pending']; const env = row.envelopeId ? envelopeData[row.envelopeId] : null; return (
+                              <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                                <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-[#7A005D]/10 flex items-center justify-center shrink-0"><FileText size={15} className="text-[#7A005D]" /></div><div className="min-w-0 flex-1 overflow-hidden"><p className="text-xs font-semibold text-gray-900 truncate">{row.doc}</p><p className="text-[10px] text-gray-400 mt-0.5">{row.docId}</p></div></div></td>
+                                <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shrink-0"><img src={`https://picsum.photos/seed/user${row.avatar}/100/100`} alt={row.employee} className="w-full h-full object-cover" referrerPolicy="no-referrer" /></div><div className="min-w-0 overflow-hidden"><p className="text-xs font-bold text-gray-900 truncate">{row.employee}</p><p className="text-[10px] text-gray-500 truncate">{row.role}</p></div></div></td>
+                                <td className="px-6 py-4 overflow-hidden">{env ? <span className="text-xs font-medium text-[#7A005D] truncate block">{env.name}</span> : <span className="text-xs text-gray-300">—</span>}</td>
+                                <td className="px-6 py-4 overflow-hidden"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-600">{row.tag}</span></td>
+                                <td className="px-6 py-4 overflow-hidden"><span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${s.bg} ${s.text}`}><span className={`w-1.5 h-1.5 rounded-full shrink-0 ${s.dot}`} /><span className="truncate">{row.docStatus}</span></span></td>
+                                <td className="px-6 py-4 overflow-hidden"><p className="text-xs font-semibold text-gray-700">{row.lastUpdate}</p><p className="text-[10px] text-gray-400 mt-0.5">{updateLabel[row.lastUpdateState]}</p></td>
+                              </tr>
+                            ); })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })()
+              )}
+            </div>
+
+          ) : activeView === 'it' ? (
+            /* ══════════════ IT VIEW ══════════════ */
+            <div className="space-y-6">
+              {itTab === 'overview' ? (
+                <>
+                  <h1 className="text-xl font-bold text-gray-900">IT Overview</h1>
+
+                  {/* Summary cards */}
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="bg-white border border-gray-200 rounded-xl p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Monitor size={16} className="text-gray-500" />
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Devices <ChevronRight size={10} className="inline text-gray-400" /></p>
+                      </div>
+                      <p className="text-xs text-gray-500 leading-relaxed">Configure all your organization's Windows, macOS, and iOS/iPadOS devices</p>
+                      <button className="mt-4 px-3 py-1.5 bg-[#7A005D] text-white text-xs font-semibold rounded-lg hover:bg-[#60004a] flex items-center gap-1">Enroll device <ChevronDown size={10} /></button>
+                    </div>
+                    <div className="bg-white border border-gray-200 rounded-xl p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Box size={16} className="text-gray-500" />
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Orders <ChevronRight size={10} className="inline text-gray-400" /></p>
+                      </div>
+                      <p className="text-xs text-gray-500 leading-relaxed">Buy, assign, ship, retrieve, reconfigure, and store devices globally through Rippling, a certified Apple and Microsoft reseller</p>
+                      <button className="mt-4 px-3 py-1.5 bg-[#7A005D] text-white text-xs font-semibold rounded-lg hover:bg-[#60004a] flex items-center gap-1">Device store <ExternalLink size={10} /></button>
+                    </div>
+                    <div className="bg-white border border-gray-200 rounded-xl p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <LayoutGrid size={16} className="text-gray-500" />
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Third Party Access <ChevronRight size={10} className="inline text-gray-400" /></p>
+                      </div>
+                      <p className="text-3xl font-bold text-gray-900 mb-1">25</p>
+                      <p className="text-xs text-gray-500 mb-2">Integrations</p>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center"><CheckCircle2 size={12} className="text-white" /></span>
+                        <span className="text-xs font-semibold text-gray-900">No integration issues</span>
+                      </div>
+                      <p className="text-[10px] text-gray-400 mt-2">Status breakdown <ChevronDown size={10} className="inline" /></p>
+                    </div>
+                    <div className="bg-white border border-gray-200 rounded-xl p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Settings size={16} className="text-gray-500" />
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Security <ChevronRight size={10} className="inline text-gray-400" /></p>
+                      </div>
+                      <p className="text-3xl font-bold text-gray-900 mb-1">242</p>
+                      <p className="text-xs text-gray-500 mb-2">Active users</p>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center"><CheckCircle2 size={12} className="text-white" /></span>
+                        <span className="text-xs font-semibold text-gray-900">No security issues</span>
+                      </div>
+                      <p className="text-[10px] text-gray-400 mt-2">Status breakdown (Last 14 days) <ChevronDown size={10} className="inline" /></p>
+                    </div>
+                  </div>
+
+                  {/* No upcoming user changes cards */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center">
+                    <CheckCircle2 size={32} className="mb-3 text-gray-300" />
+                    <h3 className="text-sm font-bold text-gray-900 mb-1">No upcoming user changes</h3>
+                    <p className="text-xs text-gray-500 mb-3">All users have been successfully onboarded. Great work!</p>
+                    <button className="px-4 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-50">Go to IT Management</button>
+                  </div>
+
+                  <div className="bg-white border border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center">
+                    <CheckCircle2 size={32} className="mb-3 text-gray-300" />
+                    <h3 className="text-sm font-bold text-gray-900 mb-1">No upcoming user changes</h3>
+                    <p className="text-xs text-gray-500 mb-3">All users have been successfully offboarded. Great work!</p>
+                    <button className="px-4 py-2 border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-50">Go to IT Management</button>
+                  </div>
+                </>
+              ) : (
+                (() => {
+                  const itDocs = documentData.filter(row => row.category === 'Devices');
+                  const statusCfg: Record<string, { dot: string; text: string; bg: string }> = { Signed: { dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50' }, Pending: { dot: 'bg-orange-500', text: 'text-orange-700', bg: 'bg-orange-50' }, Expired: { dot: 'bg-red-500', text: 'text-red-700', bg: 'bg-red-50' }, Archived: { dot: 'bg-gray-400', text: 'text-gray-600', bg: 'bg-gray-100' }, Uploaded: { dot: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50' } };
+                  const updateLabel: Record<string, string> = { sent: 'Sent', opened: 'Last opened', signed: 'Signed' };
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2"><h2 className="text-lg font-bold text-gray-900">Documents</h2><span className="text-xs text-gray-400 font-medium">{itDocs.length}</span></div>
+                      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                        <table className="w-full text-left border-collapse table-fixed">
+                          <thead><tr className="bg-gray-50 border-b border-gray-200"><th style={{width:'24%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Document</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Employee</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Envelope</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tag</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th><th style={{width:'14%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last Update</th></tr></thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {itDocs.map((row, i) => { const s = statusCfg[row.docStatus] ?? statusCfg['Pending']; const env = row.envelopeId ? envelopeData[row.envelopeId] : null; return (
                               <tr key={i} className="hover:bg-gray-50/50 transition-colors">
                                 <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-[#7A005D]/10 flex items-center justify-center shrink-0"><FileText size={15} className="text-[#7A005D]" /></div><div className="min-w-0 flex-1 overflow-hidden"><p className="text-xs font-semibold text-gray-900 truncate">{row.doc}</p><p className="text-[10px] text-gray-400 mt-0.5">{row.docId}</p></div></div></td>
                                 <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shrink-0"><img src={`https://picsum.photos/seed/user${row.avatar}/100/100`} alt={row.employee} className="w-full h-full object-cover" referrerPolicy="no-referrer" /></div><div className="min-w-0 overflow-hidden"><p className="text-xs font-bold text-gray-900 truncate">{row.employee}</p><p className="text-[10px] text-gray-500 truncate">{row.role}</p></div></div></td>
