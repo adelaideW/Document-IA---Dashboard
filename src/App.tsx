@@ -1031,7 +1031,7 @@ export default function App() {
           ) : activeView === 'benefits' ? (
             /* ══════════════ BENEFITS VIEW ══════════════ */
             <div className="space-y-6">
-              <h1 className="text-xl font-bold text-gray-900">{benefitsTab === 'documents' ? 'Documents' : 'Benefits Overview'}</h1>
+              {benefitsTab !== 'documents' && <h1 className="text-xl font-bold text-gray-900">Benefits Overview</h1>}
 
               {benefitsTab === 'overview' ? (
                 <>
