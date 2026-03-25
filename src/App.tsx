@@ -58,7 +58,20 @@ import {
   Circle,
   UserCircle,
   Globe,
-  Building2
+  Building2,
+  Home,
+  Heart,
+  CreditCard,
+  Laptop,
+  Database,
+  Wrench,
+  Store,
+  UserPlus,
+  DollarSign,
+  Award,
+  Network,
+  Monitor,
+  GitBranch
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Responsive, WidthProvider } from 'react-grid-layout';
@@ -168,6 +181,7 @@ const ProgressBar = ({ current, total, color = "bg-[#7A005D]" }: { current: numb
 
 export default function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isHeaderDropdownOpen, setIsHeaderDropdownOpen] = useState(false);
   const [isSendDropdownOpen, setIsSendDropdownOpen] = useState(false);
   const [isRemindDropdownOpen, setIsRemindDropdownOpen] = useState(false);
   const [activeView, setActiveView] = useState<'overview' | 'team' | 'tasks' | 'templates' | 'recipients'>('overview');
@@ -194,6 +208,7 @@ export default function App() {
   const [selectedFolder, setSelectedFolder] = useState('All Document Templates');
   const [templateTab, setTemplateTab] = useState<'active' | 'archived'>('active');
   const [templateSearch, setTemplateSearch] = useState('');
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['All Document Templates']));
   // Recipients
   const [recipientSearch, setRecipientSearch] = useState('');
   const [favoritedRecipients, setFavoritedRecipients] = useState<Set<number>>(new Set());
@@ -354,10 +369,9 @@ export default function App() {
   ];
   const visibleTemplates = allTemplates.filter(t => {
     const inFolder = selectedFolder === 'All Document Templates' || t.folder === selectedFolder;
-    const isArchived = templateTab === 'archived' ? t.archived : !t.archived;
     const q = templateSearch.toLowerCase();
     const matchesSearch = t.name.toLowerCase().includes(q) || t.tag.toLowerCase().includes(q);
-    return inFolder && isArchived && matchesSearch;
+    return inFolder && matchesSearch;
   });
 
   // ── Recipients data ──────────────────────────────────────────────
@@ -400,18 +414,84 @@ export default function App() {
         animate={{ width: isSidebarCollapsed ? 80 : 240 }}
         className="bg-white border-r border-gray-200 flex flex-col h-full z-20"
       >
-        <div className="p-4 flex items-center gap-3 mb-2">
+        <div className="p-4 flex items-center gap-3 mb-2 relative">
           <div className="w-8 h-8 bg-[#7A005D] rounded flex items-center justify-center text-white font-bold text-xl shrink-0">
             R
           </div>
           {!isSidebarCollapsed && (
             <div className="flex items-center justify-between flex-1 overflow-hidden">
               <span className="font-bold text-lg truncate">Documents</span>
-              <button className="text-gray-400 hover:text-gray-600">
-                <ChevronRight size={16} className="rotate-90" />
+              <button className="text-gray-400 hover:text-gray-600" onClick={() => setIsHeaderDropdownOpen(!isHeaderDropdownOpen)}>
+                <ChevronRight size={16} className={`transition-transform ${isHeaderDropdownOpen ? 'rotate-90' : 'rotate-90'}`} />
               </button>
             </div>
           )}
+          <AnimatePresence>
+            {isHeaderDropdownOpen && !isSidebarCollapsed && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsHeaderDropdownOpen(false)} />
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.12 }}
+                  className="absolute left-3 top-full mt-1 z-50 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 w-[220px] max-h-[80vh] overflow-y-auto"
+                >
+                  {[
+                    { icon: Home, label: 'Home' },
+                    { icon: UserPlus, label: 'Hire' },
+                    { icon: Users, label: 'Offboard' },
+                    { icon: Network, label: 'Org Chart' },
+                  ].map(item => (
+                    <button key={item.label} onClick={() => setIsHeaderDropdownOpen(false)} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
+                      <item.icon size={16} className="text-gray-500 shrink-0" />
+                      {item.label}
+                    </button>
+                  ))}
+                  <div className="my-1.5 border-t border-gray-100 mx-3" />
+                  <p className="px-4 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Products</p>
+                  {[
+                    { icon: Star, label: 'Favorites', hasChevron: true },
+                    { icon: Clock, label: 'Time', hasChevron: true },
+                    { icon: Heart, label: 'Benefits', hasChevron: true },
+                    { icon: DollarSign, label: 'Payroll', hasChevron: true },
+                    { icon: CreditCard, label: 'Finance', hasChevron: true },
+                    { icon: Award, label: 'Talent', hasChevron: true },
+                    { icon: Monitor, label: 'IT', hasChevron: true },
+                    { icon: Users, label: 'HR', hasChevron: true },
+                    { icon: GitBranch, label: 'Custom Apps', hasChevron: true },
+                  ].map(item => (
+                    <button key={item.label} onClick={() => setIsHeaderDropdownOpen(false)} className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
+                      <span className="flex items-center gap-3">
+                        <item.icon size={16} className="text-gray-500 shrink-0" />
+                        {item.label}
+                      </span>
+                      {item.hasChevron && <ChevronRight size={13} className="text-gray-300" />}
+                    </button>
+                  ))}
+                  <div className="my-1.5 border-t border-gray-100 mx-3" />
+                  <p className="px-4 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Platform</p>
+                  {[
+                    { icon: Database, label: 'Data', hasChevron: true },
+                    { icon: Wrench, label: 'Tools', hasChevron: true, active: true },
+                    { icon: Settings, label: 'Company settings', hasChevron: true },
+                    { icon: Globe, label: 'Global workforce', hasChevron: false },
+                    { icon: Store, label: 'App Shop', hasChevron: false },
+                    { icon: HelpCircle, label: 'Help', hasChevron: false },
+                    { icon: Users, label: 'Refer a friend', hasChevron: false },
+                  ].map(item => (
+                    <button key={item.label} onClick={() => setIsHeaderDropdownOpen(false)} className={`w-full flex items-center justify-between px-4 py-2 text-sm transition-colors text-left ${item.active ? 'bg-gray-100 text-gray-900 font-medium' : 'text-gray-700 hover:bg-gray-50'}`}>
+                      <span className="flex items-center gap-3">
+                        <item.icon size={16} className={item.active ? 'text-gray-700 shrink-0' : 'text-gray-500 shrink-0'} />
+                        {item.label}
+                      </span>
+                      {item.hasChevron && <ChevronRight size={13} className="text-gray-300" />}
+                    </button>
+                  ))}
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
         </div>
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto pb-4">
@@ -588,8 +668,8 @@ export default function App() {
 
           ) : activeView === 'templates' ? (
             /* ══════════════ TEMPLATES VIEW ══════════════ */
-            <div className="flex gap-6 h-full -m-8">
-              {/* Folder Sidebar */}
+            <div className="flex gap-0 h-full -m-8">
+              {/* Folder Sidebar — Google Drive style */}
               <div className="w-64 shrink-0 bg-white border-r border-gray-200 flex flex-col h-full overflow-y-auto">
                 <div className="p-5 border-b border-gray-100">
                   <button className="w-full flex items-center justify-center gap-2 bg-[#7A005D] text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-[#60004a] transition-colors shadow-sm">
@@ -597,43 +677,48 @@ export default function App() {
                     New Template
                   </button>
                 </div>
-                <div className="p-3 flex-1">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-2 mb-2">Folders</p>
-                  {templateFolders.map(folder => (
-                    <button
-                      key={folder.name}
-                      onClick={() => setSelectedFolder(folder.name)}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${selectedFolder === folder.name ? 'bg-[#7A005D]/8 text-[#7A005D] font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <Folder size={14} className={selectedFolder === folder.name ? 'text-[#7A005D]' : 'text-gray-400'} />
-                        <span className="truncate">{folder.name}</span>
+                <div className="py-3 flex-1">
+                  {/* Root: All Document Templates */}
+                  <button
+                    onClick={() => { setSelectedFolder('All Document Templates'); setExpandedFolders(prev => { const next = new Set(prev); next.has('All Document Templates') ? next.delete('All Document Templates') : next.add('All Document Templates'); return next; }); }}
+                    className={`w-full flex items-center gap-2 px-4 py-2 text-sm transition-colors ${selectedFolder === 'All Document Templates' ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    <ChevronRight size={13} className={`shrink-0 transition-transform ${expandedFolders.has('All Document Templates') ? 'rotate-90' : ''}`} />
+                    <FolderOpen size={15} className={selectedFolder === 'All Document Templates' ? 'text-blue-600 shrink-0' : 'text-gray-500 shrink-0'} />
+                    <span className="truncate">All Document Templates</span>
+                  </button>
+                  {expandedFolders.has('All Document Templates') && templateFolders.filter(f => f.name !== 'All Document Templates').map(folder => {
+                    const subTemplates = allTemplates.filter(t => t.folder === folder.name);
+                    const isExpanded = expandedFolders.has(folder.name);
+                    return (
+                      <div key={folder.name}>
+                        <button
+                          onClick={() => { setSelectedFolder(folder.name); setExpandedFolders(prev => { const next = new Set(prev); next.has(folder.name) ? next.delete(folder.name) : next.add(folder.name); return next; }); }}
+                          className={`w-full flex items-center gap-2 pl-8 pr-4 py-1.5 text-sm transition-colors ${selectedFolder === folder.name ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50'}`}
+                        >
+                          <ChevronRight size={12} className={`shrink-0 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                          <Folder size={14} className={selectedFolder === folder.name ? 'text-blue-600 shrink-0' : 'text-gray-400 shrink-0'} />
+                          <span className="truncate">{folder.name}</span>
+                        </button>
+                        {isExpanded && subTemplates.map(tpl => (
+                          <div key={tpl.id} className="pl-16 pr-4 py-1.5 text-xs text-gray-500 truncate flex items-center gap-2 hover:bg-gray-50 cursor-default">
+                            <FileText size={12} className="text-gray-400 shrink-0" />
+                            <span className="truncate">{tpl.name}</span>
+                          </div>
+                        ))}
                       </div>
-                      <span className={`text-[10px] font-bold shrink-0 ml-2 ${selectedFolder === folder.name ? 'text-[#7A005D]' : 'text-gray-400'}`}>{folder.count}</span>
-                    </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Template Content */}
-              <div className="flex-1 overflow-y-auto p-8 pl-0">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-5">
+              <div className="flex-1 overflow-y-auto p-8">
+                {/* Header + Search */}
+                <div className="flex items-center justify-between mb-5">
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">{selectedFolder}</h2>
                     <p className="text-sm text-gray-400 mt-0.5">{visibleTemplates.length} template{visibleTemplates.length !== 1 ? 's' : ''}</p>
-                  </div>
-                </div>
-
-                {/* Tabs + Search */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-                    {(['active', 'archived'] as const).map(tab => (
-                      <button key={tab} onClick={() => setTemplateTab(tab)}
-                        className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-colors capitalize ${templateTab === tab ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                      </button>
-                    ))}
                   </div>
                   <div className="relative w-60">
                     <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -666,7 +751,7 @@ export default function App() {
                                 <FileText size={13} className="text-[#7A005D]" />
                               </div>
                               <div className="min-w-0">
-                                <p className="text-sm font-semibold text-[#7A005D] hover:underline cursor-pointer truncate">{tpl.name}</p>
+                                <p className="text-sm font-semibold text-gray-900 hover:underline cursor-pointer truncate">{tpl.name}</p>
                                 <p className="text-[10px] text-gray-400 mt-0.5">TPL-{String(tpl.id).padStart(3,'0')}</p>
                               </div>
                             </div>
@@ -722,13 +807,13 @@ export default function App() {
 
               {/* Table */}
               <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-visible">
-                <table className="w-full text-left border-collapse table-fixed">
+                <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-200">
-                      <th style={{width:'38%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Recipient</th>
-                      <th style={{width:'15%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Origin</th>
-                      <th style={{width:'19%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last Interacted</th>
-                      <th style={{width:'28%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Recipient</th>
+                      <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Origin</th>
+                      <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last Interacted</th>
+                      <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 z-10 w-[140px]">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -758,7 +843,7 @@ export default function App() {
                           <p className="text-xs text-gray-600">{r.lastInteracted}</p>
                         </td>
                         {/* Actions: star + ... dropdown */}
-                        <td className="px-6 py-4 relative">
+                        <td className="px-6 py-4 relative sticky right-0 bg-white z-10 w-[140px] group-hover:bg-gray-50/50">
                           <div className="flex items-center gap-3">
                             {/* Favorite star — always visible */}
                             <button
