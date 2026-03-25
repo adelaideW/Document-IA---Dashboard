@@ -184,7 +184,7 @@ export default function App() {
   const [isHeaderDropdownOpen, setIsHeaderDropdownOpen] = useState(false);
   const [isSendDropdownOpen, setIsSendDropdownOpen] = useState(false);
   const [isRemindDropdownOpen, setIsRemindDropdownOpen] = useState(false);
-  const [activeView, setActiveView] = useState<'overview' | 'team' | 'tasks' | 'templates' | 'recipients' | 'benefits' | 'payroll' | 'finance' | 'talent' | 'it' | 'hr'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'team' | 'tasks' | 'templates' | 'recipients' | 'envelopes' | 'profileFolders' | 'companyDrive' | 'benefits' | 'payroll' | 'finance' | 'talent' | 'it' | 'hr'>('overview');
   const [benefitsTab, setBenefitsTab] = useState<'overview' | 'documents'>('overview');
   const [benefitsSidebarItem, setBenefitsSidebarItem] = useState('Benefits Overview');
   const [payrollTab, setPayrollTab] = useState<'overview' | 'documents'>('overview');
@@ -652,11 +652,9 @@ export default function App() {
               <SidebarItem icon={CheckSquare} label="Tasks" isCollapsed={isSidebarCollapsed} active={activeView === 'tasks'} onClick={() => setActiveView('tasks')} />
               <SidebarItem icon={Folder} label="Templates" isCollapsed={isSidebarCollapsed} active={activeView === 'templates'} onClick={() => setActiveView('templates')} />
               <SidebarItem icon={UserSquare2} label="Recipients" isCollapsed={isSidebarCollapsed} active={activeView === 'recipients'} onClick={() => setActiveView('recipients')} />
-              <SidebarItem icon={Mail} label="Envelopes" isCollapsed={isSidebarCollapsed} />
-              <SidebarItem icon={Shuffle} label="Rules" isCollapsed={isSidebarCollapsed} />
-              <SidebarItem icon={LayoutGrid} label="Bulk upload" isCollapsed={isSidebarCollapsed} />
-              <SidebarItem icon={FolderOpen} label="Profile folders" isCollapsed={isSidebarCollapsed} />
-              <SidebarItem icon={HardDrive} label="Company drive" isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={Mail} label="Envelopes" isCollapsed={isSidebarCollapsed} active={activeView === 'envelopes'} onClick={() => { setActiveView('envelopes'); setSelectedEnvelopeId(null); }} />
+              <SidebarItem icon={FolderOpen} label="Profile folders" isCollapsed={isSidebarCollapsed} active={activeView === 'profileFolders'} onClick={() => setActiveView('profileFolders')} />
+              <SidebarItem icon={HardDrive} label="Company drive" isCollapsed={isSidebarCollapsed} active={activeView === 'companyDrive'} onClick={() => setActiveView('companyDrive')} />
               <SidebarItem icon={Settings} label="Settings" isCollapsed={isSidebarCollapsed} />
 
               <div className="my-2 border-t border-gray-100 mx-4" />
@@ -813,7 +811,7 @@ export default function App() {
                 <div className="p-5 border-b border-gray-100">
                   <button className="w-full flex items-center justify-center gap-2 bg-[#7A005D] text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-[#60004a] transition-colors shadow-sm">
                     <Plus size={15} />
-                    New Template
+                    New
                   </button>
                 </div>
                 <div className="py-3 flex-1">
@@ -839,12 +837,7 @@ export default function App() {
                           <Folder size={14} className={selectedFolder === folder.name ? 'text-blue-600 shrink-0' : 'text-gray-400 shrink-0'} />
                           <span className="truncate">{folder.name}</span>
                         </button>
-                        {isExpanded && subTemplates.map(tpl => (
-                          <div key={tpl.id} className="pl-16 pr-4 py-1.5 text-xs text-gray-500 truncate flex items-center gap-2 hover:bg-gray-50 cursor-default">
-                            <FileText size={12} className="text-gray-400 shrink-0" />
-                            <span className="truncate">{tpl.name}</span>
-                          </div>
-                        ))}
+                        
                       </div>
                     );
                   })}
@@ -1093,6 +1086,529 @@ export default function App() {
                 </table>
               </div>
             </div>
+
+          ) : activeView === 'envelopes' ? (
+            /* ══════════════ ENVELOPES VIEW ══════════════ */
+            selectedEnvelopeId ? (
+              /* ── Envelope Detail ── */
+              (() => {
+                const env = envelopeData[selectedEnvelopeId];
+                if (!env) return null;
+                const statusColor: Record<string, { dot: string; text: string; bg: string }> = {
+                  'Completed': { dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50' },
+                  'In progress': { dot: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50' },
+                  'Waiting': { dot: 'bg-gray-400', text: 'text-gray-500', bg: 'bg-gray-100' },
+                  'Yet to sign': { dot: 'bg-orange-500', text: 'text-orange-700', bg: 'bg-orange-50' },
+                  'Voided': { dot: 'bg-gray-400', text: 'text-gray-500', bg: 'bg-gray-100' },
+                  'Correcting': { dot: 'bg-yellow-500', text: 'text-yellow-700', bg: 'bg-yellow-50' },
+                };
+                const s = statusColor[env.status] ?? statusColor['Yet to sign'];
+                return (
+                  <div className="space-y-6 max-w-4xl">
+                    <button onClick={() => setSelectedEnvelopeId(null)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 font-medium transition-colors px-3 py-1.5 -ml-3 rounded-lg hover:bg-gray-100">
+                      <ArrowLeft size={16} />
+                      Back
+                    </button>
+
+                    <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <h2 className="text-lg font-bold text-gray-900">{env.name}</h2>
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${s.bg} ${s.text}`}>
+                            {env.status}
+                          </span>
+                        </div>
+                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                          <MoreVertical size={18} />
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-8 text-sm">
+                        <div>
+                          <span className="text-gray-400 text-xs">Sent on</span>
+                          <p className="text-gray-900 font-medium">{env.sentOn.split(' ').slice(0, 1).join(' ').replace(/(\d{2})\/(\d{2})\/(\d{4})/, (_, m, d, y) => { const months = ['','January','February','March','April','May','June','July','August','September','October','November','December']; return `${months[parseInt(m)]} ${parseInt(d)}, ${y}`; })}</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-400 text-xs">Sent by</span>
+                          <p className="text-[#7A005D] font-medium hover:underline cursor-pointer">{env.sentBy}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white border border-gray-200 rounded-xl p-6">
+                      <h3 className="text-sm font-bold text-gray-900 mb-3">Documents</h3>
+                      <div className="space-y-2">
+                        {env.docs.map((doc, i) => (
+                          <div key={i} className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-lg border border-gray-100">
+                            <div className="flex items-center gap-3">
+                              <FileText size={16} className="text-gray-400" />
+                              <span className="text-sm text-gray-700">{doc}</span>
+                            </div>
+                            <button className="text-gray-400 hover:text-gray-600">
+                              <Download size={16} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="bg-white border border-gray-200 rounded-xl p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-sm font-bold text-gray-900">Recipients</h3>
+                          <span className="text-xs text-gray-400">{env.recipients.length}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-40">
+                            <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input type="text" placeholder="Search" className="w-full bg-white border border-gray-200 rounded-lg pl-7 pr-3 py-1.5 text-xs focus:ring-2 focus:ring-[#7A005D]/20 outline-none" />
+                          </div>
+                          <button className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100">
+                            <SlidersHorizontal size={14} />
+                          </button>
+                          <button className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100">
+                            <Filter size={14} />
+                          </button>
+                        </div>
+                      </div>
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="px-4 py-2.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider w-12">Order</th>
+                            <th className="px-4 py-2.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Recipients</th>
+                            <th className="px-4 py-2.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                            <th className="px-4 py-2.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {env.recipients.map((r, ri) => {
+                            const rs = statusColor[r.status] ?? statusColor['Waiting'];
+                            return (
+                              <tr key={ri} className="hover:bg-gray-50/50 transition-colors">
+                                <td className="px-4 py-3">
+                                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold">{r.order}</span>
+                                </td>
+                                <td className="px-4 py-3">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-600 shrink-0">
+                                      {r.initials}
+                                    </div>
+                                    <div>
+                                      <p className="text-xs font-bold text-gray-900">{r.name}</p>
+                                      <p className="text-[10px] text-gray-400">{r.email}</p>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3">
+                                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${rs.bg} ${rs.text}`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${rs.dot}`} />
+                                    {r.status}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3 text-xs text-gray-400">-</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })()
+            ) : (
+              /* ── Envelopes List ── */
+              (() => {
+                const envelopeList = [
+                  { id: 'ENV-V1', name: 'Untitled packet', status: 'Voided', statusColor: 'gray', dateCreated: '01/09/2025' },
+                  { id: 'ENV-V2', name: 'Untitled packet', status: 'Voided', statusColor: 'gray', dateCreated: '04/25/2025' },
+                  { id: 'ENV-V3', name: 'Untitled packet', status: 'Correcting', statusColor: 'yellow', dateCreated: '06/05/2025' },
+                  { id: 'ENV-001', name: 'Onboarding Package - Mar 2026', status: 'Yet to sign', statusColor: 'orange', dateCreated: '03/01/2026' },
+                  { id: 'ENV-002', name: 'Finance Compliance Bundle Q1', status: 'Yet to sign', statusColor: 'orange', dateCreated: '02/20/2026' },
+                  { id: 'ENV-E1', name: 'Testing Adelaide - 09/23/2025 03:41 PM', status: 'Yet to sign', statusColor: 'orange', dateCreated: '09/25/2025' },
+                  { id: 'ENV-E2', name: 'Testing - 09/30/2025 9:40 AM', status: 'Yet to sign', statusColor: 'orange', dateCreated: '09/30/2025' },
+                  { id: 'ENV-E3', name: 'Adelaide testing - 10/08/2025 12:48 PM', status: 'Yet to sign', statusColor: 'orange', dateCreated: '10/08/2025' },
+                  { id: 'ENV-E4', name: 'Adelaide testing - 10/08/2025 12:48 PM', status: 'Yet to sign', statusColor: 'orange', dateCreated: '10/09/2025' },
+                  { id: 'ENV-E5', name: 'Adelaide testing - 10/08/2025 12:48 PM', status: 'Yet to sign', statusColor: 'orange', dateCreated: '10/09/2025' },
+                  { id: 'ENV-E6', name: 'Test Adelaide - 10/14/2025 12:44 PM', status: 'Yet to sign', statusColor: 'orange', dateCreated: '10/14/2025' },
+                  { id: 'ENV-E7', name: 'Test Adelaide - 10/14/2025 12:44 PM', status: 'Yet to sign', statusColor: 'orange', dateCreated: '10/14/2025' },
+                  { id: 'ENV-E8', name: 'Test Adelaide - 10/14/2025 12:44 PM', status: 'Yet to sign', statusColor: 'orange', dateCreated: '10/14/2025' },
+                  { id: 'ENV-E9', name: 'Test Adelaide - 10/14/2025 12:44 PM', status: 'Yet to sign', statusColor: 'orange', dateCreated: '10/14/2025' },
+                  { id: 'ENV-E10', name: 'Test Adelaide - 10/14/2025 12:44 PM', status: 'Yet to sign', statusColor: 'orange', dateCreated: '10/14/2025' },
+                  { id: 'ENV-E11', name: 'Test Adelaide - 10/14/2025 12:44 PM', status: 'Yet to sign', statusColor: 'orange', dateCreated: '10/14/2025' },
+                  { id: 'ENV-E12', name: 'Test Adelaide - 10/14/2025 12:44 PM', status: 'Yet to sign', statusColor: 'orange', dateCreated: '10/14/2025' },
+                ];
+                const statusStyles: Record<string, { dot: string; text: string }> = {
+                  gray: { dot: 'bg-gray-400', text: 'text-gray-600' },
+                  yellow: { dot: 'bg-yellow-500', text: 'text-yellow-700' },
+                  orange: { dot: 'bg-orange-500', text: 'text-orange-700' },
+                  green: { dot: 'bg-emerald-500', text: 'text-emerald-700' },
+                };
+                return (
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-bold text-gray-900">Envelopes</h2>
+                    </div>
+                    <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-gray-50 border-b border-gray-200">
+                            <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                              <div className="flex items-center gap-1">Name <ChevronDown size={12} /></div>
+                            </th>
+                            <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                              <div className="flex items-center gap-1">Status <Filter size={10} /> <ChevronDown size={12} /></div>
+                            </th>
+                            <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                              <div className="flex items-center gap-1">Date created <ChevronDown size={12} /></div>
+                            </th>
+                            <th className="w-24 px-3 py-3"></th>
+                            <th className="w-10 px-3 py-3"></th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {envelopeList.map((env, i) => {
+                            const ss = statusStyles[env.statusColor] ?? statusStyles['gray'];
+                            const hasDetail = envelopeData[env.id];
+                            const canSign = env.status === 'Yet to sign';
+                            return (
+                              <tr key={i} className="hover:bg-gray-50/50 transition-colors group">
+                                <td className="px-6 py-3.5">
+                                  <button onClick={() => hasDetail && setSelectedEnvelopeId(env.id)} className={`text-sm font-medium ${hasDetail ? 'text-[#7A005D] hover:underline cursor-pointer' : 'text-[#7A005D]'}`}>
+                                    {env.name}
+                                  </button>
+                                </td>
+                                <td className="px-6 py-3.5">
+                                  <span className="inline-flex items-center gap-1.5 text-xs font-medium">
+                                    <span className={`w-2 h-2 rounded-full ${ss.dot}`} />
+                                    <span className={ss.text}>{env.status}</span>
+                                  </span>
+                                </td>
+                                <td className="px-6 py-3.5 text-sm text-gray-600">{env.dateCreated}</td>
+                                <td className="px-3 py-3.5">
+                                  {canSign && (
+                                    <button className="bg-[#7A005D] text-white text-xs font-semibold px-4 py-1.5 rounded-md hover:bg-[#60004a] transition-colors">
+                                      Sign
+                                    </button>
+                                  )}
+                                </td>
+                                <td className="px-3 py-3.5">
+                                  <button className="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100 transition-colors">
+                                    <MoreVertical size={16} />
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })()
+            )
+
+          ) : activeView === 'profileFolders' ? (
+            /* ══════════════ PROFILE FOLDERS VIEW ══════════════ */
+            (() => {
+              const profileFolders = [
+                { id: 'pf-1', name: 'Notices', isDefault: true, createdFor: '', lastModified: '' },
+                { id: 'pf-2', name: 'Confidential documents', isDefault: true, createdFor: '', lastModified: '' },
+                { id: 'pf-3', name: 'Work authorization documents', isDefault: true, createdFor: '', lastModified: '' },
+                { id: 'pf-4', name: '07/25/25 US', isDefault: false, createdFor: '', lastModified: '09/26/2025 10:38 AM' },
+                { id: 'pf-5', name: 'Testing folder 02/05/26', isDefault: false, createdFor: 'Department → Engineering Department  +1', lastModified: '02/05/2026 11:08 AM' },
+                { id: 'pf-6', name: 'Testing folder 07/24/25', isDefault: false, createdFor: 'All - Contractors  +2', lastModified: '03/06/2026 1:03 PM' },
+                { id: 'pf-7', name: '07/25/25 - All everyone', isDefault: false, createdFor: 'All - Everyone', lastModified: '02/05/2026 11:08 AM' },
+                { id: 'pf-8', name: '07/24/25', isDefault: false, createdFor: 'All Super Admins  +1', lastModified: '02/05/2026 11:08 AM' },
+                { id: 'pf-9', name: 'Testing_Folder_2', isDefault: false, createdFor: 'All Super Admins', lastModified: '03/06/2026 1:03 PM' },
+                { id: 'pf-10', name: '07/25/25 - US Office', isDefault: false, createdFor: 'Work Location → San Francisco Office 2 Office', lastModified: '03/06/2026 1:03 PM' },
+                { id: 'pf-11', name: '07/25/25 - All employee', isDefault: false, createdFor: 'All - Employees', lastModified: '03/06/2026 1:03 PM' },
+                { id: 'pf-12', name: '07/25/25 - San Francisco location', isDefault: false, createdFor: '', lastModified: '03/06/2026 1:03 PM' },
+                { id: 'pf-13', name: 'Test folder for sales', isDefault: false, createdFor: 'Department → Sales Department', lastModified: '03/06/2026 1:03 PM' },
+                { id: 'pf-14', name: 'Testing_Folder_1', isDefault: false, createdFor: 'All - Everyone  AND  Department → Engineering Department', lastModified: '03/06/2026 1:03 PM' },
+                { id: 'pf-15', name: 'Testing 03/06/26', isDefault: false, createdFor: 'All Super Admins  +1', lastModified: '03/06/2026 1:03 PM' },
+                { id: 'pf-16', name: '07/25/25 -Engineering team', isDefault: false, createdFor: 'Department → Engineering Department', lastModified: '03/06/2026 1:03 PM' },
+                { id: 'pf-17', name: '07/23/25', isDefault: false, createdFor: 'All Super Admins  +1', lastModified: '03/06/2026 1:03 PM' },
+              ];
+              const [pfDropdown, setPfDropdown] = React.useState<string | null>(null);
+              return (
+                <div className="space-y-5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-xl font-bold text-gray-900">All folders</h2>
+                      <span className="text-xs text-gray-400 font-medium">{profileFolders.length}</span>
+                      <button className="text-gray-400 hover:text-gray-600 p-0.5">
+                        <HelpCircle size={14} />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button className="bg-[#7A005D] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#60004a] transition-colors shadow-sm">
+                        Create
+                      </button>
+                      <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200">
+                        <LayoutGrid size={16} />
+                      </button>
+                      <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200">
+                        <Maximize2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="relative max-w-xs">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input type="text" placeholder="Search by folder name" className="w-full bg-white border border-gray-200 rounded-lg pl-8 pr-3 py-2 text-sm focus:ring-2 focus:ring-[#7A005D]/20 outline-none" />
+                  </div>
+                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-visible">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-gray-50 border-b border-gray-200">
+                          <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                            <div className="flex items-center gap-1">Folder name <ChevronDown size={12} /></div>
+                          </th>
+                          <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                            <div className="flex items-center gap-1">Created for <ChevronDown size={12} /></div>
+                          </th>
+                          <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                            <div className="flex items-center gap-1">Last modified <ChevronDown size={12} /></div>
+                          </th>
+                          <th className="w-10 px-3 py-3"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {profileFolders.map((folder) => (
+                          <tr key={folder.id} className="hover:bg-gray-50/50 transition-colors group">
+                            <td className="px-6 py-3.5">
+                              <div className="flex items-center gap-3">
+                                <FolderOpen size={16} className="text-gray-400 shrink-0" />
+                                <span className="text-sm font-medium text-[#7A005D] hover:underline cursor-pointer">{folder.name}</span>
+                                {folder.isDefault && (
+                                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-500">Default</span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-6 py-3.5">
+                              {folder.createdFor ? (
+                                <div className="flex items-center gap-2">
+                                  <Users size={12} className="text-gray-400 shrink-0" />
+                                  <span className="text-xs text-gray-600">{folder.createdFor}</span>
+                                </div>
+                              ) : folder.isDefault ? null : (
+                                <div className="w-5 h-5 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
+                              )}
+                            </td>
+                            <td className="px-6 py-3.5 text-xs text-gray-500">{folder.lastModified}</td>
+                            <td className="px-3 py-3.5 relative">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setPfDropdown(pfDropdown === folder.id ? null : folder.id); }}
+                                className="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100 transition-colors"
+                              >
+                                <MoreVertical size={16} />
+                              </button>
+                              {pfDropdown === folder.id && (
+                                <>
+                                  <div className="fixed inset-0 z-10" onClick={() => setPfDropdown(null)} />
+                                  <div className="absolute right-0 top-10 z-20 bg-white rounded-xl shadow-xl border border-gray-100 py-2 w-52">
+                                    <button onClick={() => setPfDropdown(null)} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
+                                      <PenLine size={15} className="text-gray-400" />
+                                      Edit
+                                    </button>
+                                    <button onClick={() => setPfDropdown(null)} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
+                                      <ArrowLeft size={15} className="text-gray-400" />
+                                      Move
+                                    </button>
+                                    <button onClick={() => setPfDropdown(null)} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
+                                      <Share2 size={15} className="text-gray-400" />
+                                      Set permissions
+                                    </button>
+                                    <button onClick={() => setPfDropdown(null)} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
+                                      <Plus size={15} className="text-gray-400" />
+                                      Create subfolder
+                                    </button>
+                                    <button onClick={() => setPfDropdown(null)} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
+                                      <Upload size={15} className="text-gray-400" />
+                                      Upload
+                                    </button>
+                                    <div className="my-1 border-t border-gray-100" />
+                                    <button onClick={() => setPfDropdown(null)} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-gray-50 transition-colors text-left">
+                                      <Ban size={15} className="text-red-500" />
+                                      Remove
+                                    </button>
+                                  </div>
+                                </>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+            })()
+
+          ) : activeView === 'companyDrive' ? (
+            /* ══════════════ COMPANY DRIVE VIEW ══════════════ */
+            (() => {
+              const driveItems = [
+                { id: 'cd-1', name: 'Company Policies', type: 'folder' as const, modifiedBy: 'Harry Porter', modified: 'Mar 20, 2026', size: '—', starred: true },
+                { id: 'cd-2', name: 'Onboarding Materials', type: 'folder' as const, modifiedBy: 'Tracy Davis', modified: 'Mar 18, 2026', size: '—', starred: false },
+                { id: 'cd-3', name: 'Benefits & Insurance', type: 'folder' as const, modifiedBy: 'Carmen Brown', modified: 'Mar 15, 2026', size: '—', starred: false },
+                { id: 'cd-4', name: 'Legal & Compliance', type: 'folder' as const, modifiedBy: 'David Gonzales', modified: 'Mar 12, 2026', size: '—', starred: true },
+                { id: 'cd-5', name: 'Tax Documents', type: 'folder' as const, modifiedBy: 'Tracy Davis', modified: 'Mar 10, 2026', size: '—', starred: false },
+                { id: 'cd-6', name: 'Training Resources', type: 'folder' as const, modifiedBy: 'Kenneth Walker', modified: 'Mar 8, 2026', size: '—', starred: false },
+                { id: 'cd-7', name: 'Employee_Handbook_2026.pdf', type: 'pdf' as const, modifiedBy: 'Harry Porter', modified: 'Mar 19, 2026', size: '2.4 MB', starred: true },
+                { id: 'cd-8', name: 'PTO_Policy_Update.pdf', type: 'pdf' as const, modifiedBy: 'Carmen Brown', modified: 'Mar 17, 2026', size: '540 KB', starred: false },
+                { id: 'cd-9', name: 'Remote_Work_Guidelines.pdf', type: 'pdf' as const, modifiedBy: 'Kenneth Walker', modified: 'Mar 14, 2026', size: '1.1 MB', starred: false },
+                { id: 'cd-10', name: 'Q1_Company_Update.pdf', type: 'pdf' as const, modifiedBy: 'David Gonzales', modified: 'Mar 11, 2026', size: '3.7 MB', starred: false },
+                { id: 'cd-11', name: 'Expense_Report_Template.xlsx', type: 'spreadsheet' as const, modifiedBy: 'Tracy Davis', modified: 'Mar 9, 2026', size: '156 KB', starred: false },
+                { id: 'cd-12', name: 'Office_Safety_Protocol.pdf', type: 'pdf' as const, modifiedBy: 'Carmen Brown', modified: 'Mar 5, 2026', size: '890 KB', starred: false },
+              ];
+              const [driveView, setDriveView] = React.useState<'list' | 'grid'>('list');
+              const [driveStarred, setDriveStarred] = React.useState<Set<string>>(new Set(driveItems.filter(d => d.starred).map(d => d.id)));
+              const typeIcon = (type: string) => {
+                if (type === 'folder') return <Folder size={20} className="text-gray-500" />;
+                if (type === 'pdf') return <FileText size={20} className="text-red-500" />;
+                return <FileText size={20} className="text-green-600" />;
+              };
+              return (
+                <div className="space-y-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-900">Company Drive</h2>
+                      <p className="text-sm text-gray-400 mt-0.5">Shared files and folders for your organization</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button className="flex items-center gap-2 bg-[#7A005D] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#60004a] transition-colors shadow-sm">
+                        <Plus size={15} />
+                        New
+                      </button>
+                      <button className="flex items-center gap-2 border border-gray-200 text-gray-600 text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        <Upload size={15} />
+                        Upload
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+                        <button onClick={() => setDriveView('list')} className={`p-1.5 rounded-md transition-colors ${driveView === 'list' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}>
+                          <LayoutGrid size={16} />
+                        </button>
+                        <button onClick={() => setDriveView('grid')} className={`p-1.5 rounded-md transition-colors ${driveView === 'grid' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}>
+                          <Layout size={16} />
+                        </button>
+                      </div>
+                      <div className="relative w-60 ml-2">
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input type="text" placeholder="Search in drive…" className="w-full bg-white border border-gray-200 rounded-lg pl-8 pr-3 py-2 text-sm focus:ring-2 focus:ring-[#7A005D]/20 outline-none" />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <span>Sort by:</span>
+                      <button className="flex items-center gap-1 font-medium text-gray-700 hover:text-[#7A005D] transition-colors">
+                        Last modified <ChevronDown size={12} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {driveView === 'list' ? (
+                    <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-visible">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-gray-50 border-b border-gray-200">
+                            <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Name</th>
+                            <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Modified by</th>
+                            <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last modified</th>
+                            <th className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">File size</th>
+                            <th className="w-20 px-3 py-3"></th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {driveItems.map((item) => (
+                            <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group cursor-pointer">
+                              <td className="px-6 py-3.5">
+                                <div className="flex items-center gap-3">
+                                  {typeIcon(item.type)}
+                                  <span className={`text-sm font-medium ${item.type === 'folder' ? 'text-gray-900' : 'text-gray-700'}`}>{item.name}</span>
+                                </div>
+                              </td>
+                              <td className="px-6 py-3.5 text-xs text-gray-600">{item.modifiedBy}</td>
+                              <td className="px-6 py-3.5 text-xs text-gray-500">{item.modified}</td>
+                              <td className="px-6 py-3.5 text-xs text-gray-400">{item.size}</td>
+                              <td className="px-3 py-3.5">
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); setDriveStarred(prev => { const next = new Set(prev); next.has(item.id) ? next.delete(item.id) : next.add(item.id); return next; }); }}
+                                    className="p-1 rounded transition-colors"
+                                  >
+                                    <Star size={14} className={driveStarred.has(item.id) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 hover:text-yellow-400'} />
+                                  </button>
+                                  <button className="p-1 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-all">
+                                    <MoreVertical size={14} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="mb-4">
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Folders</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                          {driveItems.filter(d => d.type === 'folder').map(item => (
+                            <div key={item.id} className="bg-white border border-gray-200 rounded-xl p-4 hover:border-[#7A005D]/30 hover:shadow-md transition-all cursor-pointer group">
+                              <div className="flex items-center justify-between mb-3">
+                                <Folder size={24} className="text-gray-400" />
+                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <button onClick={(e) => { e.stopPropagation(); setDriveStarred(prev => { const next = new Set(prev); next.has(item.id) ? next.delete(item.id) : next.add(item.id); return next; }); }} className="p-0.5">
+                                    <Star size={12} className={driveStarred.has(item.id) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 hover:text-yellow-400'} />
+                                  </button>
+                                  <button className="p-0.5 text-gray-400 hover:text-gray-600">
+                                    <MoreVertical size={12} />
+                                  </button>
+                                </div>
+                              </div>
+                              <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
+                              <p className="text-[10px] text-gray-400 mt-1">{item.modified}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Files</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                          {driveItems.filter(d => d.type !== 'folder').map(item => (
+                            <div key={item.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-[#7A005D]/30 hover:shadow-md transition-all cursor-pointer group">
+                              <div className="h-28 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+                                {item.type === 'pdf' ? <FileText size={36} className="text-red-400" /> : <FileText size={36} className="text-green-500" />}
+                              </div>
+                              <div className="p-3 border-t border-gray-100">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                                    {item.type === 'pdf' ? <FileText size={14} className="text-red-500 shrink-0" /> : <FileText size={14} className="text-green-600 shrink-0" />}
+                                    <p className="text-xs font-medium text-gray-900 truncate">{item.name}</p>
+                                  </div>
+                                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-1">
+                                    <button onClick={(e) => { e.stopPropagation(); setDriveStarred(prev => { const next = new Set(prev); next.has(item.id) ? next.delete(item.id) : next.add(item.id); return next; }); }} className="p-0.5">
+                                      <Star size={11} className={driveStarred.has(item.id) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 hover:text-yellow-400'} />
+                                    </button>
+                                    <button className="p-0.5 text-gray-400 hover:text-gray-600">
+                                      <MoreVertical size={11} />
+                                    </button>
+                                  </div>
+                                </div>
+                                <p className="text-[10px] text-gray-400 mt-1">{item.modified} · {item.size}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()
 
           ) : activeView === 'benefits' ? (
             /* ══════════════ BENEFITS VIEW ══════════════ */
