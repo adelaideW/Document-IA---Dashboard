@@ -967,40 +967,41 @@ export default function App() {
             /* ══════════════ TEMPLATES VIEW ══════════════ */
             <div className="flex gap-0 h-full -m-8">
               {/* Folder Sidebar — Google Drive style */}
-              <div className="w-64 shrink-0 bg-white border-r border-gray-200 flex flex-col h-full overflow-y-auto">
+              <div className="w-72 shrink-0 bg-white border-r border-gray-200 flex flex-col h-full overflow-y-auto">
                 <div className="p-5 border-b border-gray-100">
                   <button className="w-full flex items-center justify-center gap-2 bg-[#7A005D] text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-[#60004a] transition-colors shadow-sm">
                     <Plus size={15} />
                     New
                   </button>
                 </div>
-                <div className="py-3 flex-1">
+                <div className="py-4 flex-1 space-y-0.5">
                   {/* Root: All Document Templates */}
                   <button
                     onClick={() => { setSelectedFolder('All Document Templates'); setExpandedFolders(prev => { const next = new Set(prev); next.has('All Document Templates') ? next.delete('All Document Templates') : next.add('All Document Templates'); return next; }); }}
-                    className={`w-full flex items-center gap-2 px-4 py-2 text-sm transition-colors ${selectedFolder === 'All Document Templates' ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50'}`}
+                    className={`w-full flex items-center gap-3 px-5 py-3 text-sm transition-colors rounded-lg mx-0 ${selectedFolder === 'All Document Templates' ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50'}`}
                   >
-                    <ChevronRight size={13} className={`shrink-0 transition-transform ${expandedFolders.has('All Document Templates') ? 'rotate-90' : ''}`} />
-                    <FolderOpen size={15} className={selectedFolder === 'All Document Templates' ? 'text-blue-600 shrink-0' : 'text-gray-500 shrink-0'} />
-                    <span className="truncate">All Document Templates</span>
+                    <ChevronRight size={14} className={`shrink-0 transition-transform ${expandedFolders.has('All Document Templates') ? 'rotate-90' : ''}`} />
+                    <FolderOpen size={18} className={selectedFolder === 'All Document Templates' ? 'text-blue-600 shrink-0' : 'text-gray-500 shrink-0'} />
+                    <span className="truncate font-medium">All Document Templates</span>
                   </button>
-                  {expandedFolders.has('All Document Templates') && templateFolders.filter(f => f.name !== 'All Document Templates').map(folder => {
-                    const subTemplates = allTemplates.filter(t => t.folder === folder.name);
-                    const isExpanded = expandedFolders.has(folder.name);
-                    return (
-                      <div key={folder.name}>
-                        <button
-                          onClick={() => { setSelectedFolder(folder.name); setExpandedFolders(prev => { const next = new Set(prev); next.has(folder.name) ? next.delete(folder.name) : next.add(folder.name); return next; }); }}
-                          className={`w-full flex items-center gap-2 pl-8 pr-4 py-1.5 text-sm transition-colors ${selectedFolder === folder.name ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50'}`}
-                        >
-                          <ChevronRight size={12} className={`shrink-0 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                          <Folder size={14} className={selectedFolder === folder.name ? 'text-blue-600 shrink-0' : 'text-gray-400 shrink-0'} />
-                          <span className="truncate">{folder.name}</span>
-                        </button>
-                        
-                      </div>
-                    );
-                  })}
+                  {expandedFolders.has('All Document Templates') && (
+                    <div className="ml-5 space-y-0.5 mt-1">
+                      {templateFolders.filter(f => f.name !== 'All Document Templates').map(folder => {
+                        const isExpanded = expandedFolders.has(folder.name);
+                        return (
+                          <button
+                            key={folder.name}
+                            onClick={() => { setSelectedFolder(folder.name); setExpandedFolders(prev => { const next = new Set(prev); next.has(folder.name) ? next.delete(folder.name) : next.add(folder.name); return next; }); }}
+                            className={`w-full flex items-center gap-3 pl-5 pr-4 py-2.5 text-sm transition-colors rounded-lg ${selectedFolder === folder.name ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-50'}`}
+                          >
+                            <ChevronRight size={13} className={`shrink-0 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                            <Folder size={16} className={selectedFolder === folder.name ? 'text-blue-600 shrink-0' : 'text-gray-400 shrink-0'} />
+                            <span className="truncate">{folder.name}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
 
