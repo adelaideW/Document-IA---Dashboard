@@ -257,19 +257,25 @@ export default function App() {
 
   // lastUpdateState: 'sent' | 'opened' | 'signed'
   const documentData = [
-    { doc: 'Employment_Agreement_John_Doe.pdf',   docId: 'DOC-001', envelopeId: 'ENV-001', employee: 'David Gonzales',  role: 'CEO, Finance',                             docStatus: 'Pending',   avatar: '1', lastUpdateState: 'sent'   as const, lastUpdate: 'Mar 1, 2026'    },
-    { doc: 'W4_Tax_Form_2026.pdf',                docId: 'DOC-002', envelopeId: 'ENV-001', employee: 'David Gonzales',  role: 'CEO, Finance',                             docStatus: 'Signed',    avatar: '1', lastUpdateState: 'signed' as const, lastUpdate: 'Mar 3, 2026'    },
-    { doc: 'Health_Insurance_Enrollment.pdf',     docId: 'DOC-003', envelopeId: 'ENV-001', employee: 'Carmen Brown',    role: 'COO, Customer Support',                    docStatus: 'Pending',   avatar: '2', lastUpdateState: 'opened' as const, lastUpdate: 'Mar 2, 2026'    },
-    { doc: 'Employment_Agreement_John_Doe.pdf',   docId: 'DOC-001', envelopeId: null,       employee: 'Harry Porter',    role: 'Demo Admin, Engineering',                  docStatus: 'Signed',    avatar: '3', lastUpdateState: 'signed' as const, lastUpdate: 'Feb 28, 2026'   },
-    { doc: 'Mutual_Non_Disclosure_Agreement.pdf', docId: 'DOC-004', envelopeId: 'ENV-002', employee: 'Harry Porter',    role: 'Demo Admin, Engineering',                  docStatus: 'Pending',   avatar: '3', lastUpdateState: 'sent'   as const, lastUpdate: 'Feb 20, 2026'   },
-    { doc: 'W4_Tax_Form_2026.pdf',                docId: 'DOC-002', envelopeId: 'ENV-002', employee: 'Tracy Davis',     role: 'CFO, Finance',                             docStatus: 'Pending',   avatar: '4', lastUpdateState: 'opened' as const, lastUpdate: 'Feb 22, 2026'   },
-    { doc: 'Offer_Letter_Template.pdf',           docId: 'DOC-005', envelopeId: 'ENV-002', employee: 'Michael Gomez',   role: 'CTO, Engineering',                         docStatus: 'Pending',   avatar: '5', lastUpdateState: 'signed' as const, lastUpdate: 'Feb 20, 2026'   },
-    { doc: 'Health_Insurance_Enrollment.pdf',     docId: 'DOC-003', envelopeId: null,       employee: 'Natalie Jackson', role: 'VP Engineering, Engineering',              docStatus: 'Pending',   avatar: '6', lastUpdateState: 'sent'   as const, lastUpdate: 'Mar 1, 2026'    },
-    { doc: 'Mutual_Non_Disclosure_Agreement.pdf', docId: 'DOC-004', envelopeId: null,       employee: 'Kenneth Walker',  role: 'Director of Engineering Ops, Engineering', docStatus: 'Expired',   avatar: '7', lastUpdateState: 'opened' as const, lastUpdate: 'Jan 15, 2026'   },
-    { doc: 'Offer_Letter_Template.pdf',           docId: 'DOC-005', envelopeId: null,       employee: 'Tara Moore',      role: 'Software Engineer, Engineering',           docStatus: 'Signed',    avatar: '8', lastUpdateState: 'signed'   as const, lastUpdate: 'Mar 4, 2026'    },
-    { doc: 'Employment_Agreement_John_Doe.pdf',   docId: 'DOC-001', envelopeId: null,       employee: 'Tara Moore',      role: 'Software Engineer, Engineering',           docStatus: 'Signed',    avatar: '8', lastUpdateState: 'signed'   as const, lastUpdate: 'Mar 4, 2026'    },
-    { doc: 'W4_Tax_Form_2026.pdf',                docId: 'DOC-002', envelopeId: null,       employee: 'Michael Gomez',   role: 'CTO, Engineering',                         docStatus: 'Archived',  avatar: '5', lastUpdateState: 'signed'   as const, lastUpdate: 'Jan 10, 2026'   },
-    { doc: 'Mutual_Non_Disclosure_Agreement.pdf', docId: 'DOC-004', envelopeId: null,       employee: 'Carmen Brown',    role: 'COO, Customer Support',                    docStatus: 'Uploaded',  avatar: '2', lastUpdateState: 'signed'   as const, lastUpdate: 'Mar 7, 2026'    },
+    { doc: 'Employment_Agreement_John_Doe.pdf',   docId: 'DOC-001', envelopeId: 'ENV-001', employee: 'David Gonzales',  role: 'CEO, Finance',                             docStatus: 'Pending',   avatar: '1', lastUpdateState: 'sent'   as const, lastUpdate: 'Mar 1, 2026',   tag: 'Onboarding',    category: 'HR Management' },
+    { doc: 'W4_Tax_Form_2026.pdf',                docId: 'DOC-002', envelopeId: 'ENV-001', employee: 'David Gonzales',  role: 'CEO, Finance',                             docStatus: 'Signed',    avatar: '1', lastUpdateState: 'signed' as const, lastUpdate: 'Mar 3, 2026',   tag: 'Tax',           category: 'Payroll' },
+    { doc: 'Health_Insurance_Enrollment.pdf',     docId: 'DOC-003', envelopeId: 'ENV-001', employee: 'Carmen Brown',    role: 'COO, Customer Support',                    docStatus: 'Pending',   avatar: '2', lastUpdateState: 'opened' as const, lastUpdate: 'Mar 2, 2026',   tag: 'Insurance',     category: 'Benefits' },
+    { doc: 'Employment_Agreement_Harry.pdf',      docId: 'DOC-006', envelopeId: null,       employee: 'Harry Porter',    role: 'Demo Admin, Engineering',                  docStatus: 'Signed',    avatar: '3', lastUpdateState: 'signed' as const, lastUpdate: 'Feb 28, 2026',  tag: 'Onboarding',    category: 'HR Management' },
+    { doc: 'Mutual_Non_Disclosure_Agreement.pdf', docId: 'DOC-004', envelopeId: 'ENV-002', employee: 'Harry Porter',    role: 'Demo Admin, Engineering',                  docStatus: 'Pending',   avatar: '3', lastUpdateState: 'sent'   as const, lastUpdate: 'Feb 20, 2026',  tag: 'Legal',         category: 'HR Management' },
+    { doc: 'W4_Tax_Form_2026.pdf',                docId: 'DOC-002', envelopeId: 'ENV-002', employee: 'Tracy Davis',     role: 'CFO, Finance',                             docStatus: 'Pending',   avatar: '4', lastUpdateState: 'opened' as const, lastUpdate: 'Feb 22, 2026',  tag: 'Tax',           category: 'Payroll' },
+    { doc: 'Offer_Letter_Michael.pdf',            docId: 'DOC-005', envelopeId: 'ENV-002', employee: 'Michael Gomez',   role: 'CTO, Engineering',                         docStatus: 'Pending',   avatar: '5', lastUpdateState: 'signed' as const, lastUpdate: 'Feb 20, 2026',  tag: 'Recruiting',    category: 'Recruiting' },
+    { doc: 'Health_Insurance_Enrollment.pdf',     docId: 'DOC-003', envelopeId: null,       employee: 'Natalie Jackson', role: 'VP Engineering, Engineering',              docStatus: 'Pending',   avatar: '6', lastUpdateState: 'sent'   as const, lastUpdate: 'Mar 1, 2026',   tag: 'Insurance',     category: 'Benefits' },
+    { doc: 'Mutual_Non_Disclosure_Agreement.pdf', docId: 'DOC-004', envelopeId: null,       employee: 'Kenneth Walker',  role: 'Director of Engineering Ops, Engineering', docStatus: 'Expired',   avatar: '7', lastUpdateState: 'opened' as const, lastUpdate: 'Jan 15, 2026',  tag: 'Legal',         category: 'HR Management' },
+    { doc: 'Offer_Letter_Tara.pdf',               docId: 'DOC-007', envelopeId: null,       employee: 'Tara Moore',      role: 'Software Engineer, Engineering',           docStatus: 'Signed',    avatar: '8', lastUpdateState: 'signed'   as const, lastUpdate: 'Mar 4, 2026',  tag: 'Recruiting',    category: 'Recruiting' },
+    { doc: 'Employment_Agreement_Tara.pdf',       docId: 'DOC-008', envelopeId: null,       employee: 'Tara Moore',      role: 'Software Engineer, Engineering',           docStatus: 'Signed',    avatar: '8', lastUpdateState: 'signed'   as const, lastUpdate: 'Mar 4, 2026',  tag: 'Onboarding',    category: 'HR Management' },
+    { doc: 'Payroll_Direct_Deposit_Form.pdf',     docId: 'DOC-009', envelopeId: null,       employee: 'Michael Gomez',   role: 'CTO, Engineering',                         docStatus: 'Archived',  avatar: '5', lastUpdateState: 'signed'   as const, lastUpdate: 'Jan 10, 2026',  tag: 'Payroll',       category: 'Payroll' },
+    { doc: 'I9_Employment_Verification.pdf',      docId: 'DOC-010', envelopeId: null,       employee: 'Carmen Brown',    role: 'COO, Customer Support',                    docStatus: 'Uploaded',  avatar: '2', lastUpdateState: 'signed'   as const, lastUpdate: 'Mar 7, 2026',   tag: 'I-9',           category: 'I9' },
+    { doc: 'I9_Employment_Verification.pdf',      docId: 'DOC-011', envelopeId: null,       employee: 'David Gonzales',  role: 'CEO, Finance',                             docStatus: 'Signed',    avatar: '1', lastUpdateState: 'signed' as const, lastUpdate: 'Mar 5, 2026',   tag: 'I-9',           category: 'I9' },
+    { doc: 'Laptop_Return_Agreement.pdf',         docId: 'DOC-012', envelopeId: null,       employee: 'Kenneth Walker',  role: 'Director of Engineering Ops, Engineering', docStatus: 'Pending',   avatar: '7', lastUpdateState: 'sent'   as const, lastUpdate: 'Mar 6, 2026',   tag: 'Equipment',     category: 'Devices' },
+    { doc: 'Device_Policy_Acknowledgment.pdf',    docId: 'DOC-013', envelopeId: null,       employee: 'Harry Porter',    role: 'Demo Admin, Engineering',                  docStatus: 'Signed',    avatar: '3', lastUpdateState: 'signed' as const, lastUpdate: 'Mar 2, 2026',   tag: 'Equipment',     category: 'Devices' },
+    { doc: '401k_Enrollment_Form.pdf',            docId: 'DOC-014', envelopeId: null,       employee: 'Tracy Davis',     role: 'CFO, Finance',                             docStatus: 'Pending',   avatar: '4', lastUpdateState: 'opened' as const, lastUpdate: 'Mar 8, 2026',   tag: 'Retirement',    category: 'Benefits' },
+    { doc: 'Dental_Vision_Enrollment.pdf',        docId: 'DOC-015', envelopeId: null,       employee: 'Natalie Jackson', role: 'VP Engineering, Engineering',              docStatus: 'Signed',    avatar: '6', lastUpdateState: 'signed' as const, lastUpdate: 'Feb 25, 2026',  tag: 'Insurance',     category: 'Benefits' },
+    { doc: 'Background_Check_Authorization.pdf',  docId: 'DOC-016', envelopeId: null,       employee: 'Michael Gomez',   role: 'CTO, Engineering',                         docStatus: 'Signed',    avatar: '5', lastUpdateState: 'signed' as const, lastUpdate: 'Feb 18, 2026',  tag: 'Recruiting',    category: 'Recruiting' },
   ];
 
   const monthAbbreviations: Record<string, string> = {
@@ -286,6 +292,8 @@ export default function App() {
   };
 
   const filteredDocumentData = documentData.filter(row => {
+    const inCategory = docCategory === 'All' || row.category === docCategory;
+    if (!inCategory) return false;
     const q = normalizeQuery(searchQuery);
     if (!q) return true;
     const envName = row.envelopeId ? envelopeData[row.envelopeId]?.name ?? '' : '';
@@ -294,7 +302,8 @@ export default function App() {
       row.employee.toLowerCase().includes(q) ||
       envName.toLowerCase().includes(q) ||
       row.docStatus.toLowerCase().includes(q) ||
-      row.lastUpdate.toLowerCase().includes(q)
+      row.lastUpdate.toLowerCase().includes(q) ||
+      row.tag.toLowerCase().includes(q)
     );
   });
 
@@ -324,29 +333,30 @@ export default function App() {
     { name: 'Compliance & Legal', count: 4 },
   ];
   const allTemplates = [
-    { id: 1,  name: 'Employment Agreement – Standard',   type: 'Multi-recipient template', entity: 'All', country: 'All', folder: 'Offer Letter Templates',        archived: false },
-    { id: 2,  name: 'W4 Tax Form 2026',                  type: 'Single-recipient template', entity: 'All', country: 'US',  folder: 'Tax Withholding Documents',     archived: false },
-    { id: 3,  name: 'Health Insurance Enrollment Form',  type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Onboarding Packets',            archived: false },
-    { id: 4,  name: 'Mutual Non-Disclosure Agreement',   type: 'Multi-recipient template', entity: 'All', country: 'All', folder: 'Compliance & Legal',            archived: false },
-    { id: 5,  name: 'Offer Letter – Engineering',        type: 'Single-recipient template', entity: 'Engineering', country: 'All', folder: 'Offer Letter Templates', archived: false },
-    { id: 6,  name: 'Offer Letter – Finance',            type: 'Single-recipient template', entity: 'Finance',     country: 'All', folder: 'Offer Letter Templates', archived: false },
-    { id: 7,  name: 'CA Withholding DE-4',               type: 'Single-recipient template', entity: 'All', country: 'US',  folder: 'Tax Withholding Documents',     archived: false },
-    { id: 8,  name: 'Federal W-9 Form',                  type: 'Single-recipient template', entity: 'All', country: 'US',  folder: 'Tax Withholding Documents',     archived: false },
-    { id: 9,  name: 'Termination Letter – Involuntary',  type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Termination Templates',         archived: false },
-    { id: 10, name: 'Termination Letter – Voluntary',    type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Termination Templates',         archived: false },
-    { id: 11, name: 'IP Assignment Agreement',           type: 'Multi-recipient template', entity: 'Engineering', country: 'All', folder: 'Compliance & Legal',     archived: false },
-    { id: 12, name: 'Arbitration Agreement',             type: 'Multi-recipient template', entity: 'All', country: 'All', folder: 'Other Agreement Templates',      archived: false },
-    { id: 13, name: 'Remote Work Agreement',             type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Other Agreement Templates',     archived: false },
-    { id: 14, name: 'Onboarding Checklist',              type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Onboarding Packets',            archived: false },
-    { id: 15, name: 'CCPA Privacy Disclosure',           type: 'Single-recipient template', entity: 'All', country: 'US',  folder: 'Compliance & Legal',            archived: true  },
-    { id: 16, name: 'Old Offer Letter 2023',             type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Offer Letter Templates',        archived: true  },
-    { id: 17, name: 'Legacy NDA Template',               type: 'Multi-recipient template', entity: 'All', country: 'All', folder: 'Compliance & Legal',            archived: true  },
-    { id: 18, name: 'Contractor Agreement v1',           type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Other Agreement Templates',     archived: true  },
+    { id: 1,  name: 'Employment Agreement – Standard',   type: 'Multi-recipient template', entity: 'All', country: 'All', folder: 'Offer Letter Templates',        archived: false, tag: 'Onboarding' },
+    { id: 2,  name: 'W4 Tax Form 2026',                  type: 'Single-recipient template', entity: 'All', country: 'US',  folder: 'Tax Withholding Documents',     archived: false, tag: 'Tax' },
+    { id: 3,  name: 'Health Insurance Enrollment Form',  type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Onboarding Packets',            archived: false, tag: 'Insurance' },
+    { id: 4,  name: 'Mutual Non-Disclosure Agreement',   type: 'Multi-recipient template', entity: 'All', country: 'All', folder: 'Compliance & Legal',            archived: false, tag: 'Legal' },
+    { id: 5,  name: 'Offer Letter – Engineering',        type: 'Single-recipient template', entity: 'Engineering', country: 'All', folder: 'Offer Letter Templates', archived: false, tag: 'Recruiting' },
+    { id: 6,  name: 'Offer Letter – Finance',            type: 'Single-recipient template', entity: 'Finance',     country: 'All', folder: 'Offer Letter Templates', archived: false, tag: 'Recruiting' },
+    { id: 7,  name: 'CA Withholding DE-4',               type: 'Single-recipient template', entity: 'All', country: 'US',  folder: 'Tax Withholding Documents',     archived: false, tag: 'Tax' },
+    { id: 8,  name: 'Federal W-9 Form',                  type: 'Single-recipient template', entity: 'All', country: 'US',  folder: 'Tax Withholding Documents',     archived: false, tag: 'Tax' },
+    { id: 9,  name: 'Termination Letter – Involuntary',  type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Termination Templates',         archived: false, tag: 'Offboarding' },
+    { id: 10, name: 'Termination Letter – Voluntary',    type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Termination Templates',         archived: false, tag: 'Offboarding' },
+    { id: 11, name: 'IP Assignment Agreement',           type: 'Multi-recipient template', entity: 'Engineering', country: 'All', folder: 'Compliance & Legal',     archived: false, tag: 'Legal' },
+    { id: 12, name: 'Arbitration Agreement',             type: 'Multi-recipient template', entity: 'All', country: 'All', folder: 'Other Agreement Templates',      archived: false, tag: 'Legal' },
+    { id: 13, name: 'Remote Work Agreement',             type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Other Agreement Templates',     archived: false, tag: 'Policy' },
+    { id: 14, name: 'Onboarding Checklist',              type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Onboarding Packets',            archived: false, tag: 'Onboarding' },
+    { id: 15, name: 'CCPA Privacy Disclosure',           type: 'Single-recipient template', entity: 'All', country: 'US',  folder: 'Compliance & Legal',            archived: true,  tag: 'Compliance' },
+    { id: 16, name: 'Old Offer Letter 2023',             type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Offer Letter Templates',        archived: true,  tag: 'Recruiting' },
+    { id: 17, name: 'Legacy NDA Template',               type: 'Multi-recipient template', entity: 'All', country: 'All', folder: 'Compliance & Legal',            archived: true,  tag: 'Legal' },
+    { id: 18, name: 'Contractor Agreement v1',           type: 'Single-recipient template', entity: 'All', country: 'All', folder: 'Other Agreement Templates',     archived: true,  tag: 'Recruiting' },
   ];
   const visibleTemplates = allTemplates.filter(t => {
     const inFolder = selectedFolder === 'All Document Templates' || t.folder === selectedFolder;
     const isArchived = templateTab === 'archived' ? t.archived : !t.archived;
-    const matchesSearch = t.name.toLowerCase().includes(templateSearch.toLowerCase());
+    const q = templateSearch.toLowerCase();
+    const matchesSearch = t.name.toLowerCase().includes(q) || t.tag.toLowerCase().includes(q);
     return inFolder && isArchived && matchesSearch;
   });
 
@@ -637,16 +647,17 @@ export default function App() {
                   <table className="w-full text-left border-collapse table-fixed">
                     <thead>
                       <tr className="bg-gray-50 border-b border-gray-200">
-                        <th style={{width:'44%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Template</th>
-                        <th style={{width:'28%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Type</th>
-                        <th style={{width:'14%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Entity</th>
-                        <th style={{width:'12%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Country</th>
+                        <th style={{width:'36%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Template</th>
+                        <th style={{width:'24%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Type</th>
+                        <th style={{width:'12%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tag</th>
+                        <th style={{width:'12%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Entity</th>
+                        <th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Country</th>
                         <th style={{width:'48px'}} className="px-3 py-3"></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {visibleTemplates.length === 0 ? (
-                        <tr><td colSpan={5} className="px-6 py-12 text-center text-sm text-gray-400">No templates found</td></tr>
+                        <tr><td colSpan={6} className="px-6 py-12 text-center text-sm text-gray-400">No templates found</td></tr>
                       ) : visibleTemplates.map((tpl, idx) => (
                         <tr key={tpl.id} className="hover:bg-gray-50/60 transition-colors group">
                           <td className="px-6 py-3.5 overflow-hidden">
@@ -662,6 +673,9 @@ export default function App() {
                           </td>
                           <td className="px-6 py-3.5 overflow-hidden">
                             <span className="text-xs text-gray-600 truncate block">{tpl.type}</span>
+                          </td>
+                          <td className="px-6 py-3.5 overflow-hidden">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-600">{tpl.tag}</span>
                           </td>
                           <td className="px-6 py-3.5 overflow-hidden">
                             <span className="text-xs text-gray-600">{tpl.entity}</span>
@@ -1209,7 +1223,7 @@ export default function App() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl font-bold text-gray-900">Documents</h2>
-                  <span className="text-xs text-gray-400 font-medium">479</span>
+                  <span className="text-xs text-gray-400 font-medium">{filteredDocumentData.length}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <button className="flex items-center gap-2 px-3 py-2 bg-white border border-[#7A005D]/20 rounded-lg text-xs font-semibold text-[#7A005D] hover:bg-[#7A005D]/5">
@@ -1886,10 +1900,11 @@ export default function App() {
                   <table className="w-full text-left border-collapse table-fixed rounded-xl">
                     <thead>
                       <tr className="bg-gray-50 border-b border-gray-200">
-                        <th style={{width:'27%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider rounded-tl-xl">Document</th>
-                        <th style={{width:'21%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Employee</th>
-                        <th style={{width:'21%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Envelope</th>
-                        <th style={{width:'12%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                        <th style={{width:'24%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider rounded-tl-xl">Document</th>
+                        <th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Employee</th>
+                        <th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Envelope</th>
+                        <th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tag</th>
+                        <th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
                         <th style={{width:'13%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last Update</th>
                         <th style={{width:'48px'}} className="px-3 py-3 rounded-tr-xl"></th>
                       </tr>
@@ -1935,6 +1950,10 @@ export default function App() {
                                 <span className="text-xs text-gray-300">—</span>
                               )}
                         </td>
+                            {/* Tag */}
+                            <td className="px-6 py-4 overflow-hidden">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-600">{row.tag}</span>
+                            </td>
                             {/* Status */}
                             <td className="px-6 py-4 overflow-hidden">
                               <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${s.bg} ${s.text}`}>
