@@ -417,14 +417,19 @@ export default function App() {
         className="bg-white border-r border-gray-200 flex flex-col h-full z-20"
       >
         <div className="p-4 flex items-center gap-3 mb-2 relative">
-          <div className="w-8 h-8 bg-[#7A005D] rounded flex items-center justify-center text-white font-bold text-xl shrink-0">
-            R
+          <div className="w-8 h-8 bg-[#7A005D] rounded flex items-center justify-center shrink-0">
+            {activeView === 'benefits'
+              ? <Heart size={16} className="text-white" />
+              : <span className="text-white font-bold text-xl">R</span>
+            }
           </div>
           {!isSidebarCollapsed && (
             <div className="flex items-center justify-between flex-1 overflow-hidden">
-              <span className="font-bold text-lg truncate">Documents</span>
+              <button className="font-bold text-lg truncate hover:text-gray-600 transition-colors" onClick={() => setIsHeaderDropdownOpen(!isHeaderDropdownOpen)}>
+                {activeView === 'benefits' ? 'Benefits' : 'Documents'}
+              </button>
               <button className="text-gray-400 hover:text-gray-600" onClick={() => setIsHeaderDropdownOpen(!isHeaderDropdownOpen)}>
-                <ChevronRight size={16} className={`transition-transform ${isHeaderDropdownOpen ? 'rotate-90' : 'rotate-90'}`} />
+                <ChevronDown size={16} />
               </button>
             </div>
           )}
@@ -455,6 +460,7 @@ export default function App() {
                   {[
                     { icon: Star, label: 'Favorites', hasChevron: true },
                     { icon: Clock, label: 'Time', hasChevron: true },
+                    { icon: FileText, label: 'Documents', hasChevron: true },
                     { icon: Heart, label: 'Benefits', hasChevron: true },
                     { icon: DollarSign, label: 'Payroll', hasChevron: true },
                     { icon: CreditCard, label: 'Finance', hasChevron: true },
@@ -463,7 +469,7 @@ export default function App() {
                     { icon: Users, label: 'HR', hasChevron: true },
                     { icon: GitBranch, label: 'Custom Apps', hasChevron: true },
                   ].map(item => (
-                    <button key={item.label} onClick={() => { setIsHeaderDropdownOpen(false); if (item.label === 'Benefits') { setActiveView('benefits'); setBenefitsTab('overview'); } }} className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
+                    <button key={item.label} onClick={() => { setIsHeaderDropdownOpen(false); if (item.label === 'Benefits') { setActiveView('benefits'); setBenefitsTab('overview'); } else if (item.label === 'Documents') { setActiveView('overview'); } }} className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
                       <span className="flex items-center gap-3">
                         <item.icon size={16} className="text-gray-500 shrink-0" />
                         {item.label}
@@ -496,51 +502,95 @@ export default function App() {
           </AnimatePresence>
         </div>
 
-        <nav className="flex-1 space-y-0.5 overflow-y-auto pb-4">
-          <SidebarItem 
-            icon={BarChart3} 
-            label="Overview" 
-            active={activeView === 'overview'} 
-            isCollapsed={isSidebarCollapsed} 
-            onClick={() => setActiveView('overview')}
-          />
-          <SidebarItem 
-            icon={FileText} 
-            label="Documents" 
-            active={activeView === 'team'} 
-            isCollapsed={isSidebarCollapsed} 
-            onClick={() => setActiveView('team')}
-          />
-          
-          <div className="my-2 border-t border-gray-100 mx-4" />
-          
-          <SidebarItem icon={CheckSquare} label="Tasks" isCollapsed={isSidebarCollapsed} active={activeView === 'tasks'} onClick={() => setActiveView('tasks')} />
-          <SidebarItem icon={Folder} label="Templates" isCollapsed={isSidebarCollapsed} active={activeView === 'templates'} onClick={() => setActiveView('templates')} />
-          <SidebarItem icon={UserSquare2} label="Recipients" isCollapsed={isSidebarCollapsed} active={activeView === 'recipients'} onClick={() => setActiveView('recipients')} />
-          <SidebarItem icon={Mail} label="Envelopes" isCollapsed={isSidebarCollapsed} />
-          <SidebarItem icon={Shuffle} label="Rules" isCollapsed={isSidebarCollapsed} />
-          <SidebarItem icon={LayoutGrid} label="Bulk upload" isCollapsed={isSidebarCollapsed} />
-          <SidebarItem icon={FolderOpen} label="Profile folders" isCollapsed={isSidebarCollapsed} />
-          <SidebarItem icon={HardDrive} label="Company drive" isCollapsed={isSidebarCollapsed} />
-          <SidebarItem icon={Settings} label="Settings" isCollapsed={isSidebarCollapsed} />
+        {activeView === 'benefits' ? (
+          /* ── Benefits Sidebar Nav ── */
+          <>
+            <nav className="flex-1 space-y-0.5 overflow-y-auto pb-4 px-2 pt-1">
+              {[
+                'Benefits Overview', 'My Benefits', 'Enrollments', 'Integrations',
+                'Deductions', 'Commuter', 'Workers\' Comp', 'ACA', 'Benefits Settings'
+              ].map(item => (
+                <button
+                  key={item}
+                  onClick={() => { setBenefitsSidebarItem(item); setBenefitsTab('overview'); }}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                    benefitsSidebarItem === item
+                      ? 'bg-[#7A005D] text-white font-semibold'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {isSidebarCollapsed ? item.charAt(0) : item}
+                </button>
+              ))}
+            </nav>
+            <div className="border-t border-gray-100 p-2">
+              {!isSidebarCollapsed && <p className="px-3 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Platform</p>}
+              <SidebarItem icon={Database} label="Data" hasChevron isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={Wrench} label="Tools" hasChevron isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={Settings} label="Company settings" hasChevron isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={Store} label="App Shop" isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={HelpCircle} label="Help" isCollapsed={isSidebarCollapsed} />
+            </div>
+            <div className="p-4 border-t border-gray-100">
+              <button 
+                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                className="flex items-center gap-3 px-2 py-2 w-full text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                {isSidebarCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+                {!isSidebarCollapsed && <span className="text-sm font-medium">Collapse panel</span>}
+              </button>
+            </div>
+          </>
+        ) : (
+          /* ── Documents Sidebar Nav ── */
+          <>
+            <nav className="flex-1 space-y-0.5 overflow-y-auto pb-4">
+              <SidebarItem 
+                icon={BarChart3} 
+                label="Overview" 
+                active={activeView === 'overview'} 
+                isCollapsed={isSidebarCollapsed} 
+                onClick={() => setActiveView('overview')}
+              />
+              <SidebarItem 
+                icon={FileText} 
+                label="Documents" 
+                active={activeView === 'team'} 
+                isCollapsed={isSidebarCollapsed} 
+                onClick={() => setActiveView('team')}
+              />
+              
+              <div className="my-2 border-t border-gray-100 mx-4" />
+              
+              <SidebarItem icon={CheckSquare} label="Tasks" isCollapsed={isSidebarCollapsed} active={activeView === 'tasks'} onClick={() => setActiveView('tasks')} />
+              <SidebarItem icon={Folder} label="Templates" isCollapsed={isSidebarCollapsed} active={activeView === 'templates'} onClick={() => setActiveView('templates')} />
+              <SidebarItem icon={UserSquare2} label="Recipients" isCollapsed={isSidebarCollapsed} active={activeView === 'recipients'} onClick={() => setActiveView('recipients')} />
+              <SidebarItem icon={Mail} label="Envelopes" isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={Shuffle} label="Rules" isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={LayoutGrid} label="Bulk upload" isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={FolderOpen} label="Profile folders" isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={HardDrive} label="Company drive" isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={Settings} label="Settings" isCollapsed={isSidebarCollapsed} />
 
-          <div className="my-2 border-t border-gray-100 mx-4" />
+              <div className="my-2 border-t border-gray-100 mx-4" />
 
-          <SidebarItem icon={LifeBuoy} label="Help docs" isExternal isCollapsed={isSidebarCollapsed} />
-          <SidebarItem icon={Briefcase} label="Tools" hasChevron isCollapsed={isSidebarCollapsed} />
-          <SidebarItem icon={Box} label="Custom apps" hasChevron isCollapsed={isSidebarCollapsed} />
-          <SidebarItem icon={Settings2} label="Global settings" hasChevron isCollapsed={isSidebarCollapsed} />
-        </nav>
+              <SidebarItem icon={LifeBuoy} label="Help docs" isExternal isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={Briefcase} label="Tools" hasChevron isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={Box} label="Custom apps" hasChevron isCollapsed={isSidebarCollapsed} />
+              <SidebarItem icon={Settings2} label="Global settings" hasChevron isCollapsed={isSidebarCollapsed} />
+            </nav>
 
-        <div className="p-4 border-t border-gray-100">
-          <button 
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            className="flex items-center gap-3 px-2 py-2 w-full text-gray-500 hover:text-gray-900 transition-colors"
-          >
-            {isSidebarCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
-            {!isSidebarCollapsed && <span className="text-sm font-medium">Collapse panel</span>}
-          </button>
-        </div>
+            <div className="p-4 border-t border-gray-100">
+              <button 
+                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                className="flex items-center gap-3 px-2 py-2 w-full text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                {isSidebarCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+                {!isSidebarCollapsed && <span className="text-sm font-medium">Collapse panel</span>}
+              </button>
+            </div>
+          </>
+        )}
       </motion.aside>
 
       {/* Main Content */}
@@ -959,222 +1009,168 @@ export default function App() {
 
           ) : activeView === 'benefits' ? (
             /* ══════════════ BENEFITS VIEW ══════════════ */
-            <div className="flex gap-0 h-full -m-8">
-              {/* Benefits Sidebar */}
-              <div className="w-56 shrink-0 bg-white border-r border-gray-200 flex flex-col h-full overflow-y-auto">
-                <div className="px-4 pt-5 pb-3 border-b border-gray-100">
-                  <button onClick={() => { setActiveView('overview'); }} className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-600 mb-3">
-                    <ArrowLeft size={13} />
-                    Back to Documents
-                  </button>
+            <div className="space-y-6">
+              <h1 className="text-xl font-bold text-gray-900">Benefits Overview</h1>
+
+              {/* Tabs: Benefits | Documents */}
+              <div className="flex items-center gap-0 border-b border-gray-200">
+                <button
+                  onClick={() => setBenefitsTab('overview')}
+                  className={`relative px-4 py-2.5 text-sm font-semibold transition-colors ${benefitsTab === 'overview' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
+                >
+                  Benefits
+                  {benefitsTab === 'overview' && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 rounded-t-full" />}
+                </button>
+                <button
+                  onClick={() => setBenefitsTab('documents')}
+                  className={`relative px-4 py-2.5 text-sm font-semibold transition-colors ${benefitsTab === 'documents' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
+                >
+                  Documents
+                  {benefitsTab === 'documents' && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 rounded-t-full" />}
+                </button>
+              </div>
+
+              {benefitsTab === 'overview' ? (
+                <>
+                  {/* Sub-tabs */}
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 bg-[#7A005D] rounded-md flex items-center justify-center">
-                      <Heart size={14} className="text-white" />
-                    </div>
-                    <span className="font-bold text-sm text-gray-900">Benefits</span>
-                    <ChevronDown size={14} className="text-gray-400" />
+                    {['Current benefits', 'Upcoming benefits', 'Past benefits'].map((tab, idx) => (
+                      <button key={tab} className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${idx === 0 ? 'bg-[#7A005D] text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+                        {tab}
+                      </button>
+                    ))}
                   </div>
-                </div>
-                <nav className="p-2 flex-1">
-                  {[
-                    'Benefits Overview', 'My Benefits', 'Enrollments', 'Integrations',
-                    'Deductions', 'Commuter', 'Workers\' Comp', 'ACA', 'Benefits Settings'
-                  ].map(item => (
-                    <button
-                      key={item}
-                      onClick={() => setBenefitsSidebarItem(item)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                        benefitsSidebarItem === item
-                          ? 'bg-[#7A005D] text-white font-semibold'
-                          : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </nav>
-                <div className="border-t border-gray-100 p-2">
-                  <p className="px-3 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Platform</p>
-                  {['Data', 'Tools', 'Company settings', 'App Shop', 'Help'].map(item => (
-                    <button key={item} className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors text-left">
-                      <span className="flex items-center gap-2">
-                        {item === 'Data' && <Database size={13} />}
-                        {item === 'Tools' && <Wrench size={13} />}
-                        {item === 'Company settings' && <Settings size={13} />}
-                        {item === 'App Shop' && <Store size={13} />}
-                        {item === 'Help' && <HelpCircle size={13} />}
-                        {item}
-                      </span>
-                      {['Data', 'Tools', 'Company settings'].includes(item) && <ChevronRight size={12} className="text-gray-300" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
-              {/* Benefits Main Content */}
-              <div className="flex-1 overflow-y-auto p-8">
-                <h1 className="text-xl font-bold text-gray-900 mb-4">Benefits Overview</h1>
-
-                {/* Tabs: Benefits | Documents */}
-                <div className="flex items-center gap-0 border-b border-gray-200 mb-6">
-                  <button
-                    onClick={() => setBenefitsTab('overview')}
-                    className={`relative px-4 py-2.5 text-sm font-semibold transition-colors ${benefitsTab === 'overview' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-                  >
-                    Benefits
-                    {benefitsTab === 'overview' && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 rounded-t-full" />}
-                  </button>
-                  <button
-                    onClick={() => setBenefitsTab('documents')}
-                    className={`relative px-4 py-2.5 text-sm font-semibold transition-colors ${benefitsTab === 'documents' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-                  >
-                    Documents
-                    {benefitsTab === 'documents' && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 rounded-t-full" />}
-                  </button>
-                </div>
-
-                {benefitsTab === 'overview' ? (
-                  <>
-                    {/* Sub-tabs */}
-                    <div className="flex items-center gap-2 mb-6">
-                      {['Current benefits', 'Upcoming benefits', 'Past benefits'].map((tab, idx) => (
-                        <button key={tab} className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${idx === 0 ? 'bg-[#7A005D] text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
-                          {tab}
-                        </button>
-                      ))}
+                  {/* Search + Actions */}
+                  <div className="flex items-center gap-4">
+                    <div className="relative w-56">
+                      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input type="text" placeholder="Search benefits" className="w-full bg-white border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-[#7A005D]/20 outline-none" />
                     </div>
-
-                    {/* Search + Actions */}
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="relative w-56">
-                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input type="text" placeholder="Search benefits" className="w-full bg-white border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-[#7A005D]/20 outline-none" />
-                      </div>
-                      <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <button className="flex items-center gap-1.5 hover:text-[#7A005D] transition-colors font-medium">
-                          <BarChart3 size={14} />
-                          Enrollment census
-                        </button>
-                        <button className="flex items-center gap-1.5 hover:text-[#7A005D] transition-colors font-medium">
-                          <FileText size={14} />
-                          Benefits packet
-                        </button>
-                        <button className="flex items-center gap-1.5 hover:text-[#7A005D] transition-colors font-medium">
-                          <PenLine size={14} />
-                          Change benefits
-                        </button>
-                      </div>
+                    <div className="flex items-center gap-3 text-sm text-gray-600">
+                      <button className="flex items-center gap-1.5 hover:text-[#7A005D] transition-colors font-medium">
+                        <BarChart3 size={14} />
+                        Enrollment census
+                      </button>
+                      <button className="flex items-center gap-1.5 hover:text-[#7A005D] transition-colors font-medium">
+                        <FileText size={14} />
+                        Benefits packet
+                      </button>
+                      <button className="flex items-center gap-1.5 hover:text-[#7A005D] transition-colors font-medium">
+                        <PenLine size={14} />
+                        Change benefits
+                      </button>
                     </div>
+                  </div>
 
-                    {/* Benefits Card */}
-                    <div className="bg-white border border-gray-200 rounded-xl p-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 bg-[#7A005D] rounded-xl flex items-center justify-center">
-                          <Heart size={24} className="text-white" />
+                  {/* Benefits Card */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 bg-[#7A005D] rounded-xl flex items-center justify-center">
+                        <Heart size={24} className="text-white" />
+                      </div>
+                      <div className="flex items-center gap-6">
+                        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <span className="text-lg font-bold text-gray-400">≡</span>
                         </div>
-                        <div className="flex items-center gap-6">
-                          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                            <span className="text-lg font-bold text-gray-400">≡</span>
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-gray-900">Rippling</p>
-                            <p className="text-[10px] text-gray-400 uppercase tracking-wider mt-0.5">Commuter</p>
-                          </div>
+                        <div>
+                          <p className="text-sm font-bold text-gray-900">Rippling</p>
+                          <p className="text-[10px] text-gray-400 uppercase tracking-wider mt-0.5">Commuter</p>
                         </div>
                       </div>
                     </div>
-                  </>
-                ) : (
-                  /* Documents tab inside Benefits */
-                  (() => {
-                    const benefitsDocs = documentData.filter(row => row.category === 'Benefits');
-                    const statusCfg: Record<string, { dot: string; text: string; bg: string }> = {
-                      Signed:   { dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50'  },
-                      Pending:  { dot: 'bg-orange-500',  text: 'text-orange-700',  bg: 'bg-orange-50'   },
-                      Expired:  { dot: 'bg-red-500',     text: 'text-red-700',     bg: 'bg-red-50'      },
-                      Archived: { dot: 'bg-gray-400',    text: 'text-gray-600',    bg: 'bg-gray-100'    },
-                      Uploaded: { dot: 'bg-blue-500',    text: 'text-blue-700',    bg: 'bg-blue-50'     },
-                    };
-                    const updateLabel: Record<string, string> = {
-                      sent: 'Sent', opened: 'Last opened', signed: 'Signed',
-                    };
-                    return (
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                          <h2 className="text-lg font-bold text-gray-900">Documents</h2>
-                          <span className="text-xs text-gray-400 font-medium">{benefitsDocs.length}</span>
-                        </div>
-                        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-                          <table className="w-full text-left border-collapse table-fixed">
-                            <thead>
-                              <tr className="bg-gray-50 border-b border-gray-200">
-                                <th style={{width:'24%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Document</th>
-                                <th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Employee</th>
-                                <th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Envelope</th>
-                                <th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tag</th>
-                                <th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                <th style={{width:'14%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last Update</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                              {benefitsDocs.map((row, i) => {
-                                const s = statusCfg[row.docStatus] ?? statusCfg['Pending'];
-                                const env = row.envelopeId ? envelopeData[row.envelopeId] : null;
-                                return (
-                                  <tr key={i} className="hover:bg-gray-50/50 transition-colors">
-                                    <td className="px-6 py-4 overflow-hidden">
-                                      <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-[#7A005D]/10 flex items-center justify-center shrink-0">
-                                          <FileText size={15} className="text-[#7A005D]" />
-                                        </div>
-                                        <div className="min-w-0 flex-1 overflow-hidden">
-                                          <p className="text-xs font-semibold text-gray-900 truncate">{row.doc}</p>
-                                          <p className="text-[10px] text-gray-400 mt-0.5">{row.docId}</p>
-                                        </div>
+                  </div>
+                </>
+              ) : (
+                /* Documents tab inside Benefits */
+                (() => {
+                  const benefitsDocs = documentData.filter(row => row.category === 'Benefits');
+                  const statusCfg: Record<string, { dot: string; text: string; bg: string }> = {
+                    Signed:   { dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50'  },
+                    Pending:  { dot: 'bg-orange-500',  text: 'text-orange-700',  bg: 'bg-orange-50'   },
+                    Expired:  { dot: 'bg-red-500',     text: 'text-red-700',     bg: 'bg-red-50'      },
+                    Archived: { dot: 'bg-gray-400',    text: 'text-gray-600',    bg: 'bg-gray-100'    },
+                    Uploaded: { dot: 'bg-blue-500',    text: 'text-blue-700',    bg: 'bg-blue-50'     },
+                  };
+                  const updateLabel: Record<string, string> = {
+                    sent: 'Sent', opened: 'Last opened', signed: 'Signed',
+                  };
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-lg font-bold text-gray-900">Documents</h2>
+                        <span className="text-xs text-gray-400 font-medium">{benefitsDocs.length}</span>
+                      </div>
+                      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                        <table className="w-full text-left border-collapse table-fixed">
+                          <thead>
+                            <tr className="bg-gray-50 border-b border-gray-200">
+                              <th style={{width:'24%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Document</th>
+                              <th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Employee</th>
+                              <th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Envelope</th>
+                              <th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tag</th>
+                              <th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                              <th style={{width:'14%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last Update</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {benefitsDocs.map((row, i) => {
+                              const s = statusCfg[row.docStatus] ?? statusCfg['Pending'];
+                              const env = row.envelopeId ? envelopeData[row.envelopeId] : null;
+                              return (
+                                <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                                  <td className="px-6 py-4 overflow-hidden">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-8 h-8 rounded-lg bg-[#7A005D]/10 flex items-center justify-center shrink-0">
+                                        <FileText size={15} className="text-[#7A005D]" />
                                       </div>
-                                    </td>
-                                    <td className="px-6 py-4 overflow-hidden">
-                                      <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shrink-0">
-                                          <img src={`https://picsum.photos/seed/user${row.avatar}/100/100`} alt={row.employee} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                                        </div>
-                                        <div className="min-w-0 overflow-hidden">
-                                          <p className="text-xs font-bold text-gray-900 truncate">{row.employee}</p>
-                                          <p className="text-[10px] text-gray-500 truncate">{row.role}</p>
-                                        </div>
+                                      <div className="min-w-0 flex-1 overflow-hidden">
+                                        <p className="text-xs font-semibold text-gray-900 truncate">{row.doc}</p>
+                                        <p className="text-[10px] text-gray-400 mt-0.5">{row.docId}</p>
                                       </div>
-                                    </td>
-                                    <td className="px-6 py-4 overflow-hidden">
-                                      {env ? (
-                                        <span className="text-xs font-medium text-[#7A005D] truncate block">{env.name}</span>
-                                      ) : (
-                                        <span className="text-xs text-gray-300">—</span>
-                                      )}
-                                    </td>
-                                    <td className="px-6 py-4 overflow-hidden">
-                                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-600">{row.tag}</span>
-                                    </td>
-                                    <td className="px-6 py-4 overflow-hidden">
-                                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${s.bg} ${s.text}`}>
-                                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${s.dot}`} />
-                                        <span className="truncate">{row.docStatus}</span>
-                                      </span>
-                                    </td>
-                                    <td className="px-6 py-4 overflow-hidden">
-                                      <p className="text-xs font-semibold text-gray-700">{row.lastUpdate}</p>
-                                      <p className="text-[10px] text-gray-400 mt-0.5">{updateLabel[row.lastUpdateState]}</p>
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4 overflow-hidden">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shrink-0">
+                                        <img src={`https://picsum.photos/seed/user${row.avatar}/100/100`} alt={row.employee} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                      </div>
+                                      <div className="min-w-0 overflow-hidden">
+                                        <p className="text-xs font-bold text-gray-900 truncate">{row.employee}</p>
+                                        <p className="text-[10px] text-gray-500 truncate">{row.role}</p>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4 overflow-hidden">
+                                    {env ? (
+                                      <span className="text-xs font-medium text-[#7A005D] truncate block">{env.name}</span>
+                                    ) : (
+                                      <span className="text-xs text-gray-300">—</span>
+                                    )}
+                                  </td>
+                                  <td className="px-6 py-4 overflow-hidden">
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-600">{row.tag}</span>
+                                  </td>
+                                  <td className="px-6 py-4 overflow-hidden">
+                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${s.bg} ${s.text}`}>
+                                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${s.dot}`} />
+                                      <span className="truncate">{row.docStatus}</span>
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 overflow-hidden">
+                                    <p className="text-xs font-semibold text-gray-700">{row.lastUpdate}</p>
+                                    <p className="text-[10px] text-gray-400 mt-0.5">{updateLabel[row.lastUpdateState]}</p>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
                       </div>
-                    );
-                  })()
-                )}
-              </div>
+                    </div>
+                  );
+                })()
+              )}
             </div>
 
           ) : activeView === 'overview' ? (
