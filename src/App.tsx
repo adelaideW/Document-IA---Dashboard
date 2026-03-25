@@ -506,15 +506,36 @@ export default function App() {
           /* ── Benefits Sidebar Nav ── */
           <>
             <nav className="flex-1 space-y-0.5 overflow-y-auto pb-4 px-2 pt-1">
-              {[
-                'Benefits Overview', 'My Benefits', 'Enrollments', 'Integrations',
-                'Deductions', 'Commuter', 'Workers\' Comp', 'ACA', 'Benefits Settings'
-              ].map(item => (
+              {['Benefits Overview', 'My Benefits'].map(item => (
                 <button
                   key={item}
                   onClick={() => { setBenefitsSidebarItem(item); setBenefitsTab('overview'); }}
                   className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                    benefitsSidebarItem === item
+                    benefitsSidebarItem === item && benefitsTab !== 'documents'
+                      ? 'bg-[#7A005D] text-white font-semibold'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {isSidebarCollapsed ? item.charAt(0) : item}
+                </button>
+              ))}
+              <button
+                onClick={() => setBenefitsTab('documents')}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                  benefitsTab === 'documents'
+                    ? 'bg-[#7A005D] text-white font-semibold'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {isSidebarCollapsed ? 'D' : 'Documents'}
+              </button>
+              <div className="my-2 border-t border-gray-100 mx-1" />
+              {['Enrollments', 'Integrations', 'Deductions', 'Commuter', 'Workers\' Comp', 'ACA', 'Benefits Settings'].map(item => (
+                <button
+                  key={item}
+                  onClick={() => { setBenefitsSidebarItem(item); setBenefitsTab('overview'); }}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                    benefitsSidebarItem === item && benefitsTab !== 'documents'
                       ? 'bg-[#7A005D] text-white font-semibold'
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
@@ -1010,28 +1031,21 @@ export default function App() {
           ) : activeView === 'benefits' ? (
             /* ══════════════ BENEFITS VIEW ══════════════ */
             <div className="space-y-6">
-              <h1 className="text-xl font-bold text-gray-900">Benefits Overview</h1>
-
-              {/* Tabs: Benefits | Documents */}
-              <div className="flex items-center gap-0 border-b border-gray-200">
-                <button
-                  onClick={() => setBenefitsTab('overview')}
-                  className={`relative px-4 py-2.5 text-sm font-semibold transition-colors ${benefitsTab === 'overview' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-                >
-                  Benefits
-                  {benefitsTab === 'overview' && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 rounded-t-full" />}
-                </button>
-                <button
-                  onClick={() => setBenefitsTab('documents')}
-                  className={`relative px-4 py-2.5 text-sm font-semibold transition-colors ${benefitsTab === 'documents' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
-                >
-                  Documents
-                  {benefitsTab === 'documents' && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 rounded-t-full" />}
-                </button>
-              </div>
+              <h1 className="text-xl font-bold text-gray-900">{benefitsTab === 'documents' ? 'Documents' : 'Benefits Overview'}</h1>
 
               {benefitsTab === 'overview' ? (
                 <>
+                  {/* Content tabs */}
+                  <div className="flex items-center gap-0 border-b border-gray-200 -mt-2">
+                    <button className="relative px-4 py-2.5 text-sm font-semibold text-gray-900">
+                      Benefits
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 rounded-t-full" />
+                    </button>
+                    <button className="relative px-4 py-2.5 text-sm font-semibold text-gray-400 hover:text-gray-600">
+                      Additional materials
+                    </button>
+                  </div>
+
                   {/* Sub-tabs */}
                   <div className="flex items-center gap-2">
                     {['Current benefits', 'Upcoming benefits', 'Past benefits'].map((tab, idx) => (
