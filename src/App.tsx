@@ -231,6 +231,11 @@ export default function App() {
   const [bulkCsvText, setBulkCsvText] = useState('');
   const [docCategory, setDocCategory] = useState('All');
   const [bulkDragOver, setBulkDragOver] = useState(false);
+  // Profile Folders
+  const [pfDropdown, setPfDropdown] = useState<string | null>(null);
+  // Company Drive
+  const [driveView, setDriveView] = useState<'list' | 'grid'>('list');
+  const [driveStarred, setDriveStarred] = useState<Set<string>>(new Set(['cd-1', 'cd-4', 'cd-7']));
 
   const layouts = {
     lg: [
@@ -250,7 +255,7 @@ export default function App() {
     ]
   };
 
-  type Recipient = { initials: string; name: string; email: string; avatar?: string; status: 'Completed' | 'In progress' | 'Waiting'; action: string; order: number; sentOn: string; completedOn: string | null };
+  type Recipient = { initials: string; name: string; email: string; avatar?: string; status: 'Completed' | 'In progress' | 'Waiting' | 'Voided'; action: string; order: number; sentOn: string; completedOn: string | null };
   const envelopeData: Record<string, {
     name: string; sentOn: string; sentBy: string; status: string;
     docs: string[]; recipients: Recipient[];
@@ -278,6 +283,161 @@ export default function App() {
         { initials: 'MG', name: 'Michael Gomez',   email: 'michael.gomez@javvycoffee.com',   avatar: '5', status: 'Completed',   action: 'To sign', order: 1, sentOn: '02/20/2026 2:30 PM', completedOn: '02/20/2026 3:47 PM' },
         { initials: 'NJ', name: 'Natalie Jackson', email: 'natalie.jackson@javvycoffee.com', avatar: '6', status: 'In progress', action: 'To sign', order: 2, sentOn: '02/20/2026 2:30 PM', completedOn: null },
         { initials: 'KW', name: 'Kenneth Walker',  email: 'kenneth.walker@javvycoffee.com',  avatar: '7', status: 'Waiting',     action: 'To sign', order: 3, sentOn: '-',                  completedOn: null },
+      ],
+    },
+    'ENV-V1': {
+      name: 'Untitled packet',
+      sentOn: '01/09/2025 10:00 AM',
+      sentBy: 'Harry Porter',
+      status: 'Voided',
+      docs: ['[DRAFT] Granular documents permissions and folders.pdf'],
+      recipients: [
+        { initials: 'AS', name: 'Alex Salazar', email: 'alex.salazar88@wrightdavisandprice.com', status: 'Voided', action: 'To sign', order: 1, sentOn: '01/09/2025 10:00 AM', completedOn: null },
+        { initials: 'HP', name: 'Harry Porter', email: 'hummingbird@ripplingdemo.com', status: 'Voided', action: 'To sign', order: 2, sentOn: '01/09/2025 10:00 AM', completedOn: null },
+      ],
+    },
+    'ENV-V2': {
+      name: 'Untitled packet',
+      sentOn: '04/25/2025 2:15 PM',
+      sentBy: 'Tracy Davis',
+      status: 'Voided',
+      docs: ['Company_Policy_Update_Q2.pdf'],
+      recipients: [
+        { initials: 'CB', name: 'Carmen Brown', email: 'carmen.brown@javvycoffee.com', status: 'Voided', action: 'To sign', order: 1, sentOn: '04/25/2025 2:15 PM', completedOn: null },
+      ],
+    },
+    'ENV-V3': {
+      name: 'Untitled packet',
+      sentOn: '06/05/2025 11:30 AM',
+      sentBy: 'David Gonzales',
+      status: 'Correcting',
+      docs: ['Benefits_Enrollment_Correction.pdf', 'Updated_W4_Form.pdf'],
+      recipients: [
+        { initials: 'TD', name: 'Tracy Davis', email: 'tracy.davis@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '06/05/2025 11:30 AM', completedOn: null },
+        { initials: 'NJ', name: 'Natalie Jackson', email: 'natalie.jackson@javvycoffee.com', status: 'Waiting', action: 'To sign', order: 2, sentOn: '-', completedOn: null },
+      ],
+    },
+    'ENV-E1': {
+      name: 'Testing Adelaide - 09/23/2025 03:41 PM',
+      sentOn: '09/25/2025 3:41 PM',
+      sentBy: 'Adelaide Wu',
+      status: 'Yet to sign',
+      docs: ['Test_Document_Sept.pdf'],
+      recipients: [
+        { initials: 'HP', name: 'Harry Porter', email: 'harry.porter@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '09/25/2025 3:41 PM', completedOn: null },
+      ],
+    },
+    'ENV-E2': {
+      name: 'Testing - 09/30/2025 9:40 AM',
+      sentOn: '09/30/2025 9:40 AM',
+      sentBy: 'Adelaide Wu',
+      status: 'Yet to sign',
+      docs: ['Test_Envelope_Document.pdf'],
+      recipients: [
+        { initials: 'DG', name: 'David Gonzales', email: 'david.gonzales@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '09/30/2025 9:40 AM', completedOn: null },
+      ],
+    },
+    'ENV-E3': {
+      name: 'Adelaide testing - 10/08/2025 12:48 PM',
+      sentOn: '10/08/2025 12:48 PM',
+      sentBy: 'Adelaide Wu',
+      status: 'Yet to sign',
+      docs: ['Employment_Agreement_Template.pdf', 'NDA_Template.pdf'],
+      recipients: [
+        { initials: 'CB', name: 'Carmen Brown', email: 'carmen.brown@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '10/08/2025 12:48 PM', completedOn: null },
+        { initials: 'MG', name: 'Michael Gomez', email: 'michael.gomez@javvycoffee.com', status: 'Waiting', action: 'To sign', order: 2, sentOn: '-', completedOn: null },
+      ],
+    },
+    'ENV-E4': {
+      name: 'Adelaide testing - 10/08/2025 12:48 PM',
+      sentOn: '10/09/2025 12:48 PM',
+      sentBy: 'Adelaide Wu',
+      status: 'Yet to sign',
+      docs: ['Offer_Letter_Draft.pdf'],
+      recipients: [
+        { initials: 'KW', name: 'Kenneth Walker', email: 'kenneth.walker@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '10/09/2025 12:48 PM', completedOn: null },
+      ],
+    },
+    'ENV-E5': {
+      name: 'Adelaide testing - 10/08/2025 12:48 PM',
+      sentOn: '10/09/2025 1:00 PM',
+      sentBy: 'Adelaide Wu',
+      status: 'Yet to sign',
+      docs: ['W4_Tax_Form_2025.pdf'],
+      recipients: [
+        { initials: 'TD', name: 'Tracy Davis', email: 'tracy.davis@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '10/09/2025 1:00 PM', completedOn: null },
+      ],
+    },
+    'ENV-E6': {
+      name: 'Test Adelaide - 10/14/2025 12:44 PM',
+      sentOn: '10/14/2025 12:44 PM',
+      sentBy: 'Adelaide Wu',
+      status: 'Yet to sign',
+      docs: ['Health_Insurance_Form.pdf', 'Dental_Plan_Enrollment.pdf'],
+      recipients: [
+        { initials: 'HP', name: 'Harry Porter', email: 'harry.porter@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '10/14/2025 12:44 PM', completedOn: null },
+        { initials: 'DG', name: 'David Gonzales', email: 'david.gonzales@javvycoffee.com', status: 'Waiting', action: 'To sign', order: 2, sentOn: '-', completedOn: null },
+      ],
+    },
+    'ENV-E7': {
+      name: 'Test Adelaide - 10/14/2025 12:44 PM',
+      sentOn: '10/14/2025 12:44 PM',
+      sentBy: 'Adelaide Wu',
+      status: 'Yet to sign',
+      docs: ['Background_Check_Form.pdf'],
+      recipients: [
+        { initials: 'NJ', name: 'Natalie Jackson', email: 'natalie.jackson@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '10/14/2025 12:44 PM', completedOn: null },
+      ],
+    },
+    'ENV-E8': {
+      name: 'Test Adelaide - 10/14/2025 12:44 PM',
+      sentOn: '10/14/2025 12:44 PM',
+      sentBy: 'Adelaide Wu',
+      status: 'Yet to sign',
+      docs: ['Payroll_Setup_Form.pdf'],
+      recipients: [
+        { initials: 'MG', name: 'Michael Gomez', email: 'michael.gomez@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '10/14/2025 12:44 PM', completedOn: null },
+      ],
+    },
+    'ENV-E9': {
+      name: 'Test Adelaide - 10/14/2025 12:44 PM',
+      sentOn: '10/14/2025 12:44 PM',
+      sentBy: 'Adelaide Wu',
+      status: 'Yet to sign',
+      docs: ['Equipment_Agreement.pdf', 'Laptop_Policy.pdf'],
+      recipients: [
+        { initials: 'CB', name: 'Carmen Brown', email: 'carmen.brown@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '10/14/2025 12:44 PM', completedOn: null },
+      ],
+    },
+    'ENV-E10': {
+      name: 'Test Adelaide - 10/14/2025 12:44 PM',
+      sentOn: '10/14/2025 12:44 PM',
+      sentBy: 'Adelaide Wu',
+      status: 'Yet to sign',
+      docs: ['Remote_Work_Policy.pdf'],
+      recipients: [
+        { initials: 'KW', name: 'Kenneth Walker', email: 'kenneth.walker@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '10/14/2025 12:44 PM', completedOn: null },
+      ],
+    },
+    'ENV-E11': {
+      name: 'Test Adelaide - 10/14/2025 12:44 PM',
+      sentOn: '10/14/2025 12:44 PM',
+      sentBy: 'Adelaide Wu',
+      status: 'Yet to sign',
+      docs: ['I9_Verification_Form.pdf'],
+      recipients: [
+        { initials: 'TD', name: 'Tracy Davis', email: 'tracy.davis@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '10/14/2025 12:44 PM', completedOn: null },
+      ],
+    },
+    'ENV-E12': {
+      name: 'Test Adelaide - 10/14/2025 12:44 PM',
+      sentOn: '10/14/2025 12:44 PM',
+      sentBy: 'Adelaide Wu',
+      status: 'Yet to sign',
+      docs: ['Company_Handbook_Acknowledgment.pdf', 'Code_of_Conduct.pdf'],
+      recipients: [
+        { initials: 'HP', name: 'Harry Porter', email: 'harry.porter@javvycoffee.com', status: 'In progress', action: 'To sign', order: 1, sentOn: '10/14/2025 12:44 PM', completedOn: null },
+        { initials: 'NJ', name: 'Natalie Jackson', email: 'natalie.jackson@javvycoffee.com', status: 'Waiting', action: 'To sign', order: 2, sentOn: '-', completedOn: null },
       ],
     },
   };
@@ -1104,7 +1264,7 @@ export default function App() {
                 };
                 const s = statusColor[env.status] ?? statusColor['Yet to sign'];
                 return (
-                  <div className="space-y-6 max-w-4xl">
+                  <div className="space-y-6 w-full">
                     <button onClick={() => setSelectedEnvelopeId(null)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 font-medium transition-colors px-3 py-1.5 -ml-3 rounded-lg hover:bg-gray-100">
                       <ArrowLeft size={16} />
                       Back
@@ -1267,12 +1427,11 @@ export default function App() {
                         <tbody className="divide-y divide-gray-100">
                           {envelopeList.map((env, i) => {
                             const ss = statusStyles[env.statusColor] ?? statusStyles['gray'];
-                            const hasDetail = envelopeData[env.id];
                             const canSign = env.status === 'Yet to sign';
                             return (
                               <tr key={i} className="hover:bg-gray-50/50 transition-colors group">
                                 <td className="px-6 py-3.5">
-                                  <button onClick={() => hasDetail && setSelectedEnvelopeId(env.id)} className={`text-sm font-medium ${hasDetail ? 'text-[#7A005D] hover:underline cursor-pointer' : 'text-[#7A005D]'}`}>
+                                  <button onClick={() => setSelectedEnvelopeId(env.id)} className="text-sm font-medium text-[#7A005D] hover:underline cursor-pointer">
                                     {env.name}
                                   </button>
                                 </td>
@@ -1328,7 +1487,6 @@ export default function App() {
                 { id: 'pf-16', name: '07/25/25 -Engineering team', isDefault: false, createdFor: 'Department → Engineering Department', lastModified: '03/06/2026 1:03 PM' },
                 { id: 'pf-17', name: '07/23/25', isDefault: false, createdFor: 'All Super Admins  +1', lastModified: '03/06/2026 1:03 PM' },
               ];
-              const [pfDropdown, setPfDropdown] = React.useState<string | null>(null);
               return (
                 <div className="space-y-5">
                   <div className="flex items-center justify-between">
@@ -1460,8 +1618,6 @@ export default function App() {
                 { id: 'cd-11', name: 'Expense_Report_Template.xlsx', type: 'spreadsheet' as const, modifiedBy: 'Tracy Davis', modified: 'Mar 9, 2026', size: '156 KB', starred: false },
                 { id: 'cd-12', name: 'Office_Safety_Protocol.pdf', type: 'pdf' as const, modifiedBy: 'Carmen Brown', modified: 'Mar 5, 2026', size: '890 KB', starred: false },
               ];
-              const [driveView, setDriveView] = React.useState<'list' | 'grid'>('list');
-              const [driveStarred, setDriveStarred] = React.useState<Set<string>>(new Set(driveItems.filter(d => d.starred).map(d => d.id)));
               const typeIcon = (type: string) => {
                 if (type === 'folder') return <Folder size={20} className="text-gray-500" />;
                 if (type === 'pdf') return <FileText size={20} className="text-red-500" />;
