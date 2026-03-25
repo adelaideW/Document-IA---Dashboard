@@ -1226,7 +1226,76 @@ export default function App() {
           ) : activeView === 'payroll' ? (
             /* ══════════════ PAYROLL VIEW ══════════════ */
             <div className="space-y-6">
-              {payrollTab === 'overview' ? (
+              {payrollTab === 'overview' && payrollSidebarItem === 'My Pay' ? (
+                <>
+                  <h1 className="text-xl font-bold text-gray-900">My Pay</h1>
+
+                  {/* Content tabs */}
+                  <div className="flex items-center gap-0 border-b border-gray-200 -mt-2">
+                    {['Pay', 'Bank Accounts', 'Taxes', 'Settings', 'Exemptions'].map((tab, idx) => (
+                      <button key={tab} className={`relative px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors ${idx === 0 ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}>
+                        {tab}
+                        {idx === 0 && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 rounded-t-full" />}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Pay stubs card */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-bold text-gray-900">Pay stubs</h3>
+                        <span className="text-xs text-gray-400">5</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50">
+                          <Download size={13} /> Download all paystubs
+                        </button>
+                        <button className="p-1.5 text-gray-400 hover:text-gray-600 border border-gray-200 rounded-lg">
+                          <Maximize2 size={13} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 mb-4">
+                      <select className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-semibold outline-none">
+                        <option>2026</option>
+                        <option>2025</option>
+                      </select>
+                    </div>
+
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider w-1/2">Pay run</th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                            <div className="flex items-center gap-1">
+                              Pay date <span className="text-[#7A005D]">▾</span>
+                            </div>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {[
+                          { run: 'Feb 16th - Feb 28th', date: '03/12/2026' },
+                          { run: 'Feb 1st - Feb 15th', date: '02/26/2026' },
+                          { run: 'Jan 16th - Jan 31st', date: '02/12/2026' },
+                          { run: 'Jan 1st - Jan 15th', date: '01/28/2026', highlight: true },
+                          { run: 'Dec 16th - Dec 31st', date: '01/13/2026', highlight: true },
+                        ].map((stub, i) => (
+                          <tr key={i} className={`hover:bg-gray-50/50 ${stub.highlight ? 'bg-blue-50/40' : ''}`}>
+                            <td className="py-3">
+                              <span className="text-xs font-medium text-[#7A005D] hover:underline cursor-pointer">{stub.run}</span>
+                            </td>
+                            <td className="py-3 text-xs text-gray-600">{stub.date}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+
+              ) : payrollTab === 'overview' ? (
                 <>
                   <h1 className="text-xl font-bold text-gray-900">Payroll</h1>
 
