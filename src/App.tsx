@@ -184,9 +184,13 @@ export default function App() {
   const [isHeaderDropdownOpen, setIsHeaderDropdownOpen] = useState(false);
   const [isSendDropdownOpen, setIsSendDropdownOpen] = useState(false);
   const [isRemindDropdownOpen, setIsRemindDropdownOpen] = useState(false);
-  const [activeView, setActiveView] = useState<'overview' | 'team' | 'tasks' | 'templates' | 'recipients' | 'benefits'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'team' | 'tasks' | 'templates' | 'recipients' | 'benefits' | 'payroll' | 'finance'>('overview');
   const [benefitsTab, setBenefitsTab] = useState<'overview' | 'documents'>('overview');
   const [benefitsSidebarItem, setBenefitsSidebarItem] = useState('Benefits Overview');
+  const [payrollTab, setPayrollTab] = useState<'overview' | 'documents'>('overview');
+  const [payrollSidebarItem, setPayrollSidebarItem] = useState('Payroll Overview');
+  const [financeTab, setFinanceTab] = useState<'overview' | 'documents'>('overview');
+  const [financeSidebarItem, setFinanceSidebarItem] = useState('Finance Overview');
   const [isInsightBannerVisible, setIsInsightBannerVisible] = useState(true);
   const [selectedEnvelopeId, setSelectedEnvelopeId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -293,6 +297,11 @@ export default function App() {
     { doc: '401k_Enrollment_Form.pdf',            docId: 'DOC-014', envelopeId: null,       employee: 'Tracy Davis',     role: 'CFO, Finance',                             docStatus: 'Pending',   avatar: '4', lastUpdateState: 'opened' as const, lastUpdate: 'Mar 8, 2026',   tag: 'Retirement',    category: 'Benefits' },
     { doc: 'Dental_Vision_Enrollment.pdf',        docId: 'DOC-015', envelopeId: null,       employee: 'Natalie Jackson', role: 'VP Engineering, Engineering',              docStatus: 'Signed',    avatar: '6', lastUpdateState: 'signed' as const, lastUpdate: 'Feb 25, 2026',  tag: 'Insurance',     category: 'Benefits' },
     { doc: 'Background_Check_Authorization.pdf',  docId: 'DOC-016', envelopeId: null,       employee: 'Michael Gomez',   role: 'CTO, Engineering',                         docStatus: 'Signed',    avatar: '5', lastUpdateState: 'signed' as const, lastUpdate: 'Feb 18, 2026',  tag: 'Recruiting',    category: 'Recruiting' },
+    { doc: 'Expense_Reimbursement_Policy.pdf',    docId: 'DOC-017', envelopeId: null,       employee: 'Tracy Davis',     role: 'CFO, Finance',                             docStatus: 'Signed',    avatar: '4', lastUpdateState: 'signed' as const, lastUpdate: 'Mar 10, 2026',  tag: 'Policy',        category: 'Finance' },
+    { doc: 'Corporate_Card_Agreement.pdf',        docId: 'DOC-018', envelopeId: null,       employee: 'David Gonzales',  role: 'CEO, Finance',                             docStatus: 'Pending',   avatar: '1', lastUpdateState: 'sent'   as const, lastUpdate: 'Mar 12, 2026',  tag: 'Cards',         category: 'Finance' },
+    { doc: 'Travel_Policy_Acknowledgment.pdf',    docId: 'DOC-019', envelopeId: null,       employee: 'Harry Porter',    role: 'Demo Admin, Engineering',                  docStatus: 'Signed',    avatar: '3', lastUpdateState: 'signed' as const, lastUpdate: 'Mar 9, 2026',   tag: 'Travel',        category: 'Finance' },
+    { doc: 'Vendor_Payment_Authorization.pdf',    docId: 'DOC-020', envelopeId: null,       employee: 'Carmen Brown',    role: 'COO, Customer Support',                    docStatus: 'Pending',   avatar: '2', lastUpdateState: 'opened' as const, lastUpdate: 'Mar 11, 2026',  tag: 'Vendor',        category: 'Finance' },
+    { doc: 'Annual_Budget_Approval_2026.pdf',     docId: 'DOC-021', envelopeId: null,       employee: 'Kenneth Walker',  role: 'Director of Engineering Ops, Engineering', docStatus: 'Signed',    avatar: '7', lastUpdateState: 'signed' as const, lastUpdate: 'Feb 15, 2026',  tag: 'Budget',        category: 'Finance' },
   ];
 
   const monthAbbreviations: Record<string, string> = {
@@ -418,15 +427,16 @@ export default function App() {
       >
         <div className="p-4 flex items-center gap-3 mb-2 relative">
           <div className="w-8 h-8 bg-[#7A005D] rounded flex items-center justify-center shrink-0">
-            {activeView === 'benefits'
-              ? <Heart size={16} className="text-white" />
+            {activeView === 'benefits' ? <Heart size={16} className="text-white" />
+              : activeView === 'payroll' ? <DollarSign size={16} className="text-white" />
+              : activeView === 'finance' ? <CreditCard size={16} className="text-white" />
               : <span className="text-white font-bold text-xl">R</span>
             }
           </div>
           {!isSidebarCollapsed && (
             <div className="flex items-center justify-between flex-1 overflow-hidden">
               <button className="font-bold text-lg truncate hover:text-gray-600 transition-colors" onClick={() => setIsHeaderDropdownOpen(!isHeaderDropdownOpen)}>
-                {activeView === 'benefits' ? 'Benefits' : 'Documents'}
+                {activeView === 'benefits' ? 'Benefits' : activeView === 'payroll' ? 'Payroll' : activeView === 'finance' ? 'Finance' : 'Documents'}
               </button>
               <button className="text-gray-400 hover:text-gray-600" onClick={() => setIsHeaderDropdownOpen(!isHeaderDropdownOpen)}>
                 <ChevronDown size={16} />
@@ -469,7 +479,7 @@ export default function App() {
                     { icon: Users, label: 'HR', hasChevron: true },
                     { icon: GitBranch, label: 'Custom Apps', hasChevron: true },
                   ].map(item => (
-                    <button key={item.label} onClick={() => { setIsHeaderDropdownOpen(false); if (item.label === 'Benefits') { setActiveView('benefits'); setBenefitsTab('overview'); } else if (item.label === 'Documents') { setActiveView('overview'); } }} className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
+                    <button key={item.label} onClick={() => { setIsHeaderDropdownOpen(false); if (item.label === 'Benefits') { setActiveView('benefits'); setBenefitsTab('overview'); } else if (item.label === 'Payroll') { setActiveView('payroll'); setPayrollTab('overview'); } else if (item.label === 'Finance') { setActiveView('finance'); setFinanceTab('overview'); } else if (item.label === 'Documents') { setActiveView('overview'); } }} className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
                       <span className="flex items-center gap-3">
                         <item.icon size={16} className="text-gray-500 shrink-0" />
                         {item.label}
@@ -502,66 +512,92 @@ export default function App() {
           </AnimatePresence>
         </div>
 
-        {activeView === 'benefits' ? (
-          /* ── Benefits Sidebar Nav ── */
-          <>
-            <nav className="flex-1 space-y-0.5 overflow-y-auto pb-4 px-2 pt-1">
-              {['Benefits Overview', 'My Benefits'].map(item => (
-                <button
-                  key={item}
-                  onClick={() => { setBenefitsSidebarItem(item); setBenefitsTab('overview'); }}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                    benefitsSidebarItem === item && benefitsTab !== 'documents'
-                      ? 'bg-[#7A005D] text-white font-semibold'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  {isSidebarCollapsed ? item.charAt(0) : item}
-                </button>
-              ))}
-              <button
-                onClick={() => setBenefitsTab('documents')}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  benefitsTab === 'documents'
-                    ? 'bg-[#7A005D] text-white font-semibold'
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                {isSidebarCollapsed ? 'D' : 'Documents'}
-              </button>
-              <div className="my-2 border-t border-gray-100 mx-1" />
-              {['Enrollments', 'Integrations', 'Deductions', 'Commuter', 'Workers\' Comp', 'ACA', 'Benefits Settings'].map(item => (
-                <button
-                  key={item}
-                  onClick={() => { setBenefitsSidebarItem(item); setBenefitsTab('overview'); }}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                    benefitsSidebarItem === item && benefitsTab !== 'documents'
-                      ? 'bg-[#7A005D] text-white font-semibold'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  {isSidebarCollapsed ? item.charAt(0) : item}
-                </button>
-              ))}
-            </nav>
-            <div className="border-t border-gray-100 p-2">
-              {!isSidebarCollapsed && <p className="px-3 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Platform</p>}
-              <SidebarItem icon={Database} label="Data" hasChevron isCollapsed={isSidebarCollapsed} />
-              <SidebarItem icon={Wrench} label="Tools" hasChevron isCollapsed={isSidebarCollapsed} />
-              <SidebarItem icon={Settings} label="Company settings" hasChevron isCollapsed={isSidebarCollapsed} />
-              <SidebarItem icon={Store} label="App Shop" isCollapsed={isSidebarCollapsed} />
-              <SidebarItem icon={HelpCircle} label="Help" isCollapsed={isSidebarCollapsed} />
-            </div>
-            <div className="p-4 border-t border-gray-100">
-              <button 
-                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                className="flex items-center gap-3 px-2 py-2 w-full text-gray-500 hover:text-gray-900 transition-colors"
-              >
-                {isSidebarCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
-                {!isSidebarCollapsed && <span className="text-sm font-medium">Collapse panel</span>}
-              </button>
-            </div>
-          </>
+        {activeView === 'benefits' || activeView === 'payroll' || activeView === 'finance' ? (
+          /* ── Product Sidebar Nav (Benefits / Payroll / Finance) ── */
+          (() => {
+            const productConfig = activeView === 'benefits' ? {
+              topItems: ['Benefits Overview', 'My Benefits'],
+              bottomItems: ['Enrollments', 'Integrations', 'Deductions', 'Commuter', 'Workers\' Comp', 'ACA', 'Benefits Settings'],
+              activeItem: benefitsSidebarItem,
+              setActiveItem: setBenefitsSidebarItem,
+              tab: benefitsTab,
+              setTab: setBenefitsTab,
+            } : activeView === 'payroll' ? {
+              topItems: ['Payroll Overview', 'My Pay'],
+              bottomItems: ['Accounting Integrations', 'Global Payroll'],
+              activeItem: payrollSidebarItem,
+              setActiveItem: setPayrollSidebarItem,
+              tab: payrollTab,
+              setTab: setPayrollTab,
+            } : {
+              topItems: ['Finance Overview', 'My Finances'],
+              bottomItems: ['Tasks', 'Travel', 'Cards', 'Reimbursements', 'Expense reports', 'Bills', 'Transactions', 'Statements', 'Accounting', 'People', 'Vendors', 'Policies'],
+              activeItem: financeSidebarItem,
+              setActiveItem: setFinanceSidebarItem,
+              tab: financeTab,
+              setTab: setFinanceTab,
+            };
+            return (
+              <>
+                <nav className="flex-1 space-y-0.5 overflow-y-auto pb-4 px-2 pt-1">
+                  {productConfig.topItems.map(item => (
+                    <button
+                      key={item}
+                      onClick={() => { productConfig.setActiveItem(item); productConfig.setTab('overview'); }}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                        productConfig.activeItem === item && productConfig.tab !== 'documents'
+                          ? 'bg-[#7A005D] text-white font-semibold'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {isSidebarCollapsed ? item.charAt(0) : item}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => productConfig.setTab('documents')}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                      productConfig.tab === 'documents'
+                        ? 'bg-[#7A005D] text-white font-semibold'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {isSidebarCollapsed ? 'D' : 'Documents'}
+                  </button>
+                  <div className="my-2 border-t border-gray-100 mx-1" />
+                  {productConfig.bottomItems.map(item => (
+                    <button
+                      key={item}
+                      onClick={() => { productConfig.setActiveItem(item); productConfig.setTab('overview'); }}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                        productConfig.activeItem === item && productConfig.tab !== 'documents'
+                          ? 'bg-[#7A005D] text-white font-semibold'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {isSidebarCollapsed ? item.charAt(0) : item}
+                    </button>
+                  ))}
+                </nav>
+                <div className="border-t border-gray-100 p-2">
+                  {!isSidebarCollapsed && <p className="px-3 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Platform</p>}
+                  <SidebarItem icon={Database} label="Data" hasChevron isCollapsed={isSidebarCollapsed} />
+                  <SidebarItem icon={Wrench} label="Tools" hasChevron isCollapsed={isSidebarCollapsed} />
+                  <SidebarItem icon={Settings} label="Company settings" hasChevron isCollapsed={isSidebarCollapsed} />
+                  <SidebarItem icon={Store} label="App Shop" isCollapsed={isSidebarCollapsed} />
+                  <SidebarItem icon={HelpCircle} label="Help" isCollapsed={isSidebarCollapsed} />
+                </div>
+                <div className="p-4 border-t border-gray-100">
+                  <button 
+                    onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                    className="flex items-center gap-3 px-2 py-2 w-full text-gray-500 hover:text-gray-900 transition-colors"
+                  >
+                    {isSidebarCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+                    {!isSidebarCollapsed && <span className="text-sm font-medium">Collapse panel</span>}
+                  </button>
+                </div>
+              </>
+            );
+          })()
         ) : (
           /* ── Documents Sidebar Nav ── */
           <>
@@ -1178,6 +1214,247 @@ export default function App() {
                                 </tr>
                               );
                             })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })()
+              )}
+            </div>
+
+          ) : activeView === 'payroll' ? (
+            /* ══════════════ PAYROLL VIEW ══════════════ */
+            <div className="space-y-6">
+              {payrollTab === 'overview' ? (
+                <>
+                  <h1 className="text-xl font-bold text-gray-900">Payroll</h1>
+
+                  {/* Content tabs */}
+                  <div className="flex items-center gap-0 border-b border-gray-200 -mt-2 overflow-x-auto">
+                    {['Overview', 'People', 'Settings', 'Reimbursements', 'Deductions', 'Garnishments', 'Accounting', 'Reports', 'Documents', 'Expected Tax Notices', 'Tax Exemptions', 'Amendments', 'Tax Payments'].map((tab, idx) => (
+                      <button key={tab} className={`relative px-3 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors ${idx === 0 ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}>
+                        {tab}
+                        {idx === 0 && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 rounded-t-full" />}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Sub-tabs */}
+                  <div className="flex items-center gap-2">
+                    {['Upcoming', 'Past', 'Archived', 'Failed'].map((tab, idx) => (
+                      <button key={tab} className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${idx === 0 ? 'bg-[#7A005D] text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Alert banners */}
+                  <div className="space-y-3">
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start justify-between">
+                      <div className="flex items-start gap-3">
+                        <span className="text-red-500 mt-0.5">⚠</span>
+                        <div>
+                          <p className="text-sm font-bold text-red-800">Action Required</p>
+                          <p className="text-xs text-red-600 mt-0.5">We are unable to auto-approve Mar 16th – Mar 31st payroll as some of your employees are missing key information needed to run payroll.</p>
+                        </div>
+                      </div>
+                      <button className="px-3 py-1.5 bg-red-600 text-white text-xs font-semibold rounded-lg hover:bg-red-700 shrink-0">View all issues</button>
+                    </div>
+                    <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-start justify-between">
+                      <div className="flex items-start gap-3">
+                        <span className="text-orange-500 mt-0.5">⚠</span>
+                        <div>
+                          <p className="text-sm font-bold text-orange-800">Immediate attention required: Approve pay run: FUTA Credit Reduction 2023</p>
+                          <p className="text-xs text-orange-600 mt-0.5">There's only <strong>1 hour, 35 min</strong> to approve this pay run.</p>
+                        </div>
+                      </div>
+                      <button className="px-3 py-1.5 bg-white border border-orange-300 text-orange-700 text-xs font-semibold rounded-lg hover:bg-orange-50 shrink-0">View payroll</button>
+                    </div>
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+                      <span className="text-blue-500 mt-0.5">ℹ</span>
+                      <div>
+                        <p className="text-sm font-bold text-blue-800">Action required: Add Roth retirement plans for Secure 2.0</p>
+                        <p className="text-xs text-blue-600 mt-0.5">Your company does not have Roth 401K. Starting Jan 1, 2026, those over age 50 who earned over $150,000 in 2025 can only contribute catchups to 401K via Roth plans.</p>
+                        <button className="mt-2 px-3 py-1.5 bg-[#7A005D] text-white text-xs font-semibold rounded-lg hover:bg-[#60004a]">Learn more</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Upcoming pay runs table */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-bold text-gray-900">Upcoming</h3>
+                        <span className="text-xs text-gray-400">2</span>
+                      </div>
+                      <button className="text-xs font-semibold text-gray-500 hover:text-gray-700">Create an off-cycle pay run</button>
+                    </div>
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="relative w-40">
+                        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input type="text" placeholder="Search" className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs outline-none" />
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-gray-500">
+                        <span className="font-semibold">Pay run type</span>
+                        <select className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs outline-none">
+                          <option>All types</option>
+                        </select>
+                      </div>
+                    </div>
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pay Run</th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pay Date</th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Approve by</th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                          <th className="py-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        <tr className="hover:bg-gray-50/50">
+                          <td className="py-3"><span className="text-xs font-medium text-[#7A005D] hover:underline cursor-pointer">FUTA Credit Reduction 2023</span><br/><span className="text-[10px] text-gray-400">December 28, 2023</span></td>
+                          <td className="py-3 text-xs text-gray-600">March 25, 2026 02:50 PM</td>
+                          <td className="py-3 text-xs text-orange-600 font-medium">1 hour, 35 min!</td>
+                          <td className="py-3"><span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-orange-50 text-orange-700"><span className="w-1.5 h-1.5 rounded-full bg-orange-500" />Draft</span></td>
+                          <td className="py-3 text-xs text-gray-500">Run payroll</td>
+                        </tr>
+                        <tr className="hover:bg-gray-50/50">
+                          <td className="py-3"><span className="text-xs font-medium text-[#7A005D] hover:underline cursor-pointer">Mar 16th – Mar 31st</span><br/><span className="text-[10px] text-gray-400">Semi-month pay schedule</span></td>
+                          <td className="py-3 text-xs text-gray-600">March 31, 2026</td>
+                          <td className="py-3 text-xs text-gray-600">March 25, 2026 02:50 PM</td>
+                          <td className="py-3"><span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-50 text-red-700"><span className="w-1.5 h-1.5 rounded-full bg-red-500" />Auto-approval failed</span></td>
+                          <td className="py-3 text-xs text-gray-500">Run payroll</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              ) : (
+                (() => {
+                  const payrollDocs = documentData.filter(row => row.category === 'Payroll');
+                  const statusCfg: Record<string, { dot: string; text: string; bg: string }> = { Signed: { dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50' }, Pending: { dot: 'bg-orange-500', text: 'text-orange-700', bg: 'bg-orange-50' }, Expired: { dot: 'bg-red-500', text: 'text-red-700', bg: 'bg-red-50' }, Archived: { dot: 'bg-gray-400', text: 'text-gray-600', bg: 'bg-gray-100' }, Uploaded: { dot: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50' } };
+                  const updateLabel: Record<string, string> = { sent: 'Sent', opened: 'Last opened', signed: 'Signed' };
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2"><h2 className="text-lg font-bold text-gray-900">Documents</h2><span className="text-xs text-gray-400 font-medium">{payrollDocs.length}</span></div>
+                      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                        <table className="w-full text-left border-collapse table-fixed">
+                          <thead><tr className="bg-gray-50 border-b border-gray-200"><th style={{width:'24%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Document</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Employee</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Envelope</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tag</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th><th style={{width:'14%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last Update</th></tr></thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {payrollDocs.map((row, i) => { const s = statusCfg[row.docStatus] ?? statusCfg['Pending']; const env = row.envelopeId ? envelopeData[row.envelopeId] : null; return (
+                              <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                                <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-[#7A005D]/10 flex items-center justify-center shrink-0"><FileText size={15} className="text-[#7A005D]" /></div><div className="min-w-0 flex-1 overflow-hidden"><p className="text-xs font-semibold text-gray-900 truncate">{row.doc}</p><p className="text-[10px] text-gray-400 mt-0.5">{row.docId}</p></div></div></td>
+                                <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shrink-0"><img src={`https://picsum.photos/seed/user${row.avatar}/100/100`} alt={row.employee} className="w-full h-full object-cover" referrerPolicy="no-referrer" /></div><div className="min-w-0 overflow-hidden"><p className="text-xs font-bold text-gray-900 truncate">{row.employee}</p><p className="text-[10px] text-gray-500 truncate">{row.role}</p></div></div></td>
+                                <td className="px-6 py-4 overflow-hidden">{env ? <span className="text-xs font-medium text-[#7A005D] truncate block">{env.name}</span> : <span className="text-xs text-gray-300">—</span>}</td>
+                                <td className="px-6 py-4 overflow-hidden"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-600">{row.tag}</span></td>
+                                <td className="px-6 py-4 overflow-hidden"><span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${s.bg} ${s.text}`}><span className={`w-1.5 h-1.5 rounded-full shrink-0 ${s.dot}`} /><span className="truncate">{row.docStatus}</span></span></td>
+                                <td className="px-6 py-4 overflow-hidden"><p className="text-xs font-semibold text-gray-700">{row.lastUpdate}</p><p className="text-[10px] text-gray-400 mt-0.5">{updateLabel[row.lastUpdateState]}</p></td>
+                              </tr>
+                            ); })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })()
+              )}
+            </div>
+
+          ) : activeView === 'finance' ? (
+            /* ══════════════ FINANCE VIEW ══════════════ */
+            <div className="space-y-6">
+              {financeTab === 'overview' ? (
+                <>
+                  <h1 className="text-xl font-bold text-gray-900">Finance Overview</h1>
+
+                  {/* AI Insight banner */}
+                  <div className="bg-[#7A005D]/5 border border-[#7A005D]/10 rounded-xl p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-[#7A005D] rounded-lg flex items-center justify-center text-white">
+                        <Sparkles size={20} />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-[#7A005D] uppercase tracking-widest mb-0.5">Rippling AI Insight</p>
+                        <h3 className="text-sm font-bold text-gray-900">The company spent $17,383.80 on travel last year</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">Aggregate travel spend across travel bookings, corporate cards, and reimbursements and group by department.</p>
+                      </div>
+                    </div>
+                    <button className="bg-[#7A005D] text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-[#60004a] shrink-0">Discover</button>
+                  </div>
+
+                  {/* Company Balance */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-5">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-gray-500 font-medium">Company balance</p>
+                        <p className="text-2xl font-bold text-gray-900 mt-1">-$1,985,896.96 USD</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">Includes pending transactions: $0.00 USD</p>
+                      </div>
+                      <div className="flex items-center gap-6 text-xs text-gray-500">
+                        <div><p className="font-semibold text-gray-400 uppercase text-[10px]">Billing cycle</p><p className="font-bold text-gray-900 mt-0.5">Monthly</p></div>
+                        <div><p className="font-semibold text-gray-400 uppercase text-[10px]">Due date</p><p className="font-bold text-gray-900 mt-0.5">Apr 21, 2026</p></div>
+                        <div><p className="font-semibold text-gray-400 uppercase text-[10px]">Available to spend</p><p className="font-bold text-gray-900 mt-0.5">$2,485,896.96</p></div>
+                        <button className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-50">Statements</button>
+                        <button className="px-3 py-1.5 bg-[#7A005D] text-white rounded-lg text-xs font-semibold hover:bg-[#60004a]">Make a payment</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Spend Management Overview */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-bold text-gray-900">Spend Management Overview</h3>
+                      <span className="text-[10px] text-gray-400">2 months ago</span>
+                    </div>
+                    <p className="text-sm font-bold text-gray-900 mb-4">Spend by type (Last 30 days)</p>
+                    <div className="h-40 bg-gray-50 rounded-lg flex items-end justify-around px-6 pb-4 gap-2">
+                      {[35, 20, 55, 45, 70, 130, 80, 60, 25].map((h, i) => (
+                        <div key={i} className="flex flex-col items-center gap-1">
+                          <div style={{height: h}} className={`w-8 rounded-t-md ${i < 3 ? 'bg-[#7A005D]' : i < 6 ? 'bg-orange-400' : 'bg-red-400'}`} />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-4 mt-3 justify-center">
+                      <span className="flex items-center gap-1 text-[10px] text-gray-500"><span className="w-2.5 h-2.5 rounded-sm bg-[#7A005D]" />Bill Payment</span>
+                      <span className="flex items-center gap-1 text-[10px] text-gray-500"><span className="w-2.5 h-2.5 rounded-sm bg-orange-400" />Card Transaction</span>
+                      <span className="flex items-center gap-1 text-[10px] text-gray-500"><span className="w-2.5 h-2.5 rounded-sm bg-red-400" />Expense Request</span>
+                    </div>
+                  </div>
+
+                  {/* All spend this month */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-5">
+                    <h3 className="text-sm font-bold text-gray-900 mb-4">All spend this month</h3>
+                    <div className="h-32 bg-gray-50 rounded-lg flex items-end justify-center gap-1 px-6 pb-4">
+                      {[40, 60, 90].map((h, i) => (
+                        <div key={i} style={{height: h}} className={`w-10 rounded-t-md ${i === 0 ? 'bg-[#7A005D]' : i === 1 ? 'bg-orange-400' : 'bg-[#7A005D]/60'}`} />
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                (() => {
+                  const financeDocs = documentData.filter(row => row.category === 'Finance');
+                  const statusCfg: Record<string, { dot: string; text: string; bg: string }> = { Signed: { dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50' }, Pending: { dot: 'bg-orange-500', text: 'text-orange-700', bg: 'bg-orange-50' }, Expired: { dot: 'bg-red-500', text: 'text-red-700', bg: 'bg-red-50' }, Archived: { dot: 'bg-gray-400', text: 'text-gray-600', bg: 'bg-gray-100' }, Uploaded: { dot: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50' } };
+                  const updateLabel: Record<string, string> = { sent: 'Sent', opened: 'Last opened', signed: 'Signed' };
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2"><h2 className="text-lg font-bold text-gray-900">Documents</h2><span className="text-xs text-gray-400 font-medium">{financeDocs.length}</span></div>
+                      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                        <table className="w-full text-left border-collapse table-fixed">
+                          <thead><tr className="bg-gray-50 border-b border-gray-200"><th style={{width:'24%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Document</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Employee</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Envelope</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tag</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th><th style={{width:'14%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last Update</th></tr></thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {financeDocs.map((row, i) => { const s = statusCfg[row.docStatus] ?? statusCfg['Pending']; const env = row.envelopeId ? envelopeData[row.envelopeId] : null; return (
+                              <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                                <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-[#7A005D]/10 flex items-center justify-center shrink-0"><FileText size={15} className="text-[#7A005D]" /></div><div className="min-w-0 flex-1 overflow-hidden"><p className="text-xs font-semibold text-gray-900 truncate">{row.doc}</p><p className="text-[10px] text-gray-400 mt-0.5">{row.docId}</p></div></div></td>
+                                <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shrink-0"><img src={`https://picsum.photos/seed/user${row.avatar}/100/100`} alt={row.employee} className="w-full h-full object-cover" referrerPolicy="no-referrer" /></div><div className="min-w-0 overflow-hidden"><p className="text-xs font-bold text-gray-900 truncate">{row.employee}</p><p className="text-[10px] text-gray-500 truncate">{row.role}</p></div></div></td>
+                                <td className="px-6 py-4 overflow-hidden">{env ? <span className="text-xs font-medium text-[#7A005D] truncate block">{env.name}</span> : <span className="text-xs text-gray-300">—</span>}</td>
+                                <td className="px-6 py-4 overflow-hidden"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-600">{row.tag}</span></td>
+                                <td className="px-6 py-4 overflow-hidden"><span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${s.bg} ${s.text}`}><span className={`w-1.5 h-1.5 rounded-full shrink-0 ${s.dot}`} /><span className="truncate">{row.docStatus}</span></span></td>
+                                <td className="px-6 py-4 overflow-hidden"><p className="text-xs font-semibold text-gray-700">{row.lastUpdate}</p><p className="text-[10px] text-gray-400 mt-0.5">{updateLabel[row.lastUpdateState]}</p></td>
+                              </tr>
+                            ); })}
                           </tbody>
                         </table>
                       </div>
