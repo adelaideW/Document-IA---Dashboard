@@ -184,7 +184,7 @@ export default function App() {
   const [isHeaderDropdownOpen, setIsHeaderDropdownOpen] = useState(false);
   const [isSendDropdownOpen, setIsSendDropdownOpen] = useState(false);
   const [isRemindDropdownOpen, setIsRemindDropdownOpen] = useState(false);
-  const [activeView, setActiveView] = useState<'overview' | 'team' | 'tasks' | 'templates' | 'recipients' | 'benefits' | 'payroll' | 'finance' | 'talent' | 'it'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'team' | 'tasks' | 'templates' | 'recipients' | 'benefits' | 'payroll' | 'finance' | 'talent' | 'it' | 'hr'>('overview');
   const [benefitsTab, setBenefitsTab] = useState<'overview' | 'documents'>('overview');
   const [benefitsSidebarItem, setBenefitsSidebarItem] = useState('Benefits Overview');
   const [payrollTab, setPayrollTab] = useState<'overview' | 'documents'>('overview');
@@ -195,6 +195,8 @@ export default function App() {
   const [talentSidebarItem, setTalentSidebarItem] = useState('Talent Overview');
   const [itTab, setItTab] = useState<'overview' | 'documents'>('overview');
   const [itSidebarItem, setItSidebarItem] = useState('IT Overview');
+  const [hrTab, setHrTab] = useState<'overview' | 'documents'>('overview');
+  const [hrSidebarItem, setHrSidebarItem] = useState('HR Overview');
   const [isInsightBannerVisible, setIsInsightBannerVisible] = useState(true);
   const [selectedEnvelopeId, setSelectedEnvelopeId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -436,13 +438,14 @@ export default function App() {
               : activeView === 'finance' ? <CreditCard size={16} className="text-white" />
               : activeView === 'talent' ? <Award size={16} className="text-white" />
               : activeView === 'it' ? <Monitor size={16} className="text-white" />
+              : activeView === 'hr' ? <Users size={16} className="text-white" />
               : <span className="text-white font-bold text-xl">R</span>
             }
           </div>
           {!isSidebarCollapsed && (
             <div className="flex items-center justify-between flex-1 overflow-hidden">
               <button className="font-bold text-lg truncate hover:text-gray-600 transition-colors" onClick={() => setIsHeaderDropdownOpen(!isHeaderDropdownOpen)}>
-                {activeView === 'benefits' ? 'Benefits' : activeView === 'payroll' ? 'Payroll' : activeView === 'finance' ? 'Finance' : activeView === 'talent' ? 'Talent' : activeView === 'it' ? 'IT' : 'Documents'}
+                {activeView === 'benefits' ? 'Benefits' : activeView === 'payroll' ? 'Payroll' : activeView === 'finance' ? 'Finance' : activeView === 'talent' ? 'Talent' : activeView === 'it' ? 'IT' : activeView === 'hr' ? 'HR' : 'Documents'}
               </button>
               <button className="text-gray-400 hover:text-gray-600" onClick={() => setIsHeaderDropdownOpen(!isHeaderDropdownOpen)}>
                 <ChevronDown size={16} />
@@ -485,7 +488,7 @@ export default function App() {
                     { icon: Users, label: 'HR', hasChevron: true },
                     { icon: GitBranch, label: 'Custom Apps', hasChevron: true },
                   ].map(item => (
-                    <button key={item.label} onClick={() => { setIsHeaderDropdownOpen(false); if (item.label === 'Benefits') { setActiveView('benefits'); setBenefitsTab('overview'); } else if (item.label === 'Payroll') { setActiveView('payroll'); setPayrollTab('overview'); setPayrollSidebarItem('Payroll Overview'); } else if (item.label === 'Finance') { setActiveView('finance'); setFinanceTab('overview'); setFinanceSidebarItem('Finance Overview'); } else if (item.label === 'Talent') { setActiveView('talent'); setTalentTab('overview'); setTalentSidebarItem('Talent Overview'); } else if (item.label === 'IT') { setActiveView('it'); setItTab('overview'); setItSidebarItem('IT Overview'); } else if (item.label === 'Documents') { setActiveView('overview'); } }} className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
+                    <button key={item.label} onClick={() => { setIsHeaderDropdownOpen(false); if (item.label === 'Benefits') { setActiveView('benefits'); setBenefitsTab('overview'); } else if (item.label === 'Payroll') { setActiveView('payroll'); setPayrollTab('overview'); setPayrollSidebarItem('Payroll Overview'); } else if (item.label === 'Finance') { setActiveView('finance'); setFinanceTab('overview'); setFinanceSidebarItem('Finance Overview'); } else if (item.label === 'Talent') { setActiveView('talent'); setTalentTab('overview'); setTalentSidebarItem('Talent Overview'); } else if (item.label === 'IT') { setActiveView('it'); setItTab('overview'); setItSidebarItem('IT Overview'); } else if (item.label === 'HR') { setActiveView('hr'); setHrTab('overview'); setHrSidebarItem('HR Overview'); } else if (item.label === 'Documents') { setActiveView('overview'); } }} className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left">
                       <span className="flex items-center gap-3">
                         <item.icon size={16} className="text-gray-500 shrink-0" />
                         {item.label}
@@ -518,7 +521,7 @@ export default function App() {
           </AnimatePresence>
         </div>
 
-        {activeView === 'benefits' || activeView === 'payroll' || activeView === 'finance' || activeView === 'talent' || activeView === 'it' ? (
+        {activeView === 'benefits' || activeView === 'payroll' || activeView === 'finance' || activeView === 'talent' || activeView === 'it' || activeView === 'hr' ? (
           /* ── Product Sidebar Nav ── */
           (() => {
             const productConfig = activeView === 'benefits' ? {
@@ -549,6 +552,13 @@ export default function App() {
               setActiveItem: setItSidebarItem,
               tab: itTab,
               setTab: setItTab,
+            } : activeView === 'hr' ? {
+              topItems: ['HR Overview', 'Org Chart'],
+              bottomItems: ['People', 'Anniversaries', 'Compliance 360', 'Contractor Hub', 'EEO and CPDR reporting', 'Employment Verifications', 'Work Authorization'],
+              activeItem: hrSidebarItem,
+              setActiveItem: setHrSidebarItem,
+              tab: hrTab,
+              setTab: setHrTab,
             } : {
               topItems: ['Finance Overview', 'My Finances'],
               bottomItems: ['Tasks', 'Travel', 'Cards', 'Reimbursements', 'Expense reports', 'Bills', 'Transactions', 'Statements', 'Accounting', 'People', 'Vendors', 'Policies'],
@@ -1535,6 +1545,150 @@ export default function App() {
                           <thead><tr className="bg-gray-50 border-b border-gray-200"><th style={{width:'24%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Document</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Employee</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Envelope</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tag</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th><th style={{width:'14%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last Update</th></tr></thead>
                           <tbody className="divide-y divide-gray-100">
                             {financeDocs.map((row, i) => { const s = statusCfg[row.docStatus] ?? statusCfg['Pending']; const env = row.envelopeId ? envelopeData[row.envelopeId] : null; return (
+                              <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                                <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-[#7A005D]/10 flex items-center justify-center shrink-0"><FileText size={15} className="text-[#7A005D]" /></div><div className="min-w-0 flex-1 overflow-hidden"><p className="text-xs font-semibold text-gray-900 truncate">{row.doc}</p><p className="text-[10px] text-gray-400 mt-0.5">{row.docId}</p></div></div></td>
+                                <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shrink-0"><img src={`https://picsum.photos/seed/user${row.avatar}/100/100`} alt={row.employee} className="w-full h-full object-cover" referrerPolicy="no-referrer" /></div><div className="min-w-0 overflow-hidden"><p className="text-xs font-bold text-gray-900 truncate">{row.employee}</p><p className="text-[10px] text-gray-500 truncate">{row.role}</p></div></div></td>
+                                <td className="px-6 py-4 overflow-hidden">{env ? <span className="text-xs font-medium text-[#7A005D] truncate block">{env.name}</span> : <span className="text-xs text-gray-300">—</span>}</td>
+                                <td className="px-6 py-4 overflow-hidden"><span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-600">{row.tag}</span></td>
+                                <td className="px-6 py-4 overflow-hidden"><span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${s.bg} ${s.text}`}><span className={`w-1.5 h-1.5 rounded-full shrink-0 ${s.dot}`} /><span className="truncate">{row.docStatus}</span></span></td>
+                                <td className="px-6 py-4 overflow-hidden"><p className="text-xs font-semibold text-gray-700">{row.lastUpdate}</p><p className="text-[10px] text-gray-400 mt-0.5">{updateLabel[row.lastUpdateState]}</p></td>
+                              </tr>
+                            ); })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })()
+              )}
+            </div>
+
+          ) : activeView === 'hr' ? (
+            /* ══════════════ HR VIEW ══════════════ */
+            <div className="space-y-6">
+              {hrTab === 'overview' ? (
+                <>
+                  <h1 className="text-xl font-bold text-gray-900">HR Overview</h1>
+
+                  <div className="flex gap-6">
+                    {/* Left main content */}
+                    <div className="flex-1 space-y-6">
+                      {/* Summary cards */}
+                      <div className="grid grid-cols-4 gap-4">
+                        {[
+                          { label: 'Onboarding', value: '0' },
+                          { label: 'Scheduled changes', value: '0' },
+                          { label: 'Offboarding', value: '0' },
+                          { label: 'Offboarded', value: '235' },
+                        ].map(card => (
+                          <div key={card.label} className="bg-white border border-gray-200 rounded-xl p-4">
+                            <p className="text-xs text-gray-500 font-medium">{card.label}</p>
+                            <p className="text-2xl font-bold text-gray-900 mt-1">{card.value}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Direct reports */}
+                      <div className="bg-white border border-gray-200 rounded-xl p-5">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-sm font-bold text-gray-900">Direct reports</h3>
+                          <button className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900">
+                            <Network size={13} /> View in org chart
+                          </button>
+                        </div>
+                        <div className="divide-y divide-gray-100">
+                          {[
+                            { name: 'asdf ad f', dept: 'ENG', avatar: '20' },
+                            { name: 'New Person Person', dept: 'ENG III', avatar: '21' },
+                          ].map((person, i) => (
+                            <div key={i} className="flex items-center gap-3 py-3">
+                              <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 bg-gray-100 flex items-center justify-center">
+                                <img src={`https://picsum.photos/seed/hr${person.avatar}/100/100`} alt={person.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                              </div>
+                              <div>
+                                <p className="text-xs font-bold text-gray-900">{person.name}</p>
+                                <p className="text-[10px] text-gray-500">{person.dept}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right sidebar cards */}
+                    <div className="w-64 space-y-4 shrink-0">
+                      <div className="bg-white border border-gray-200 rounded-xl p-4">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Out of Office (0)</p>
+                        <p className="text-xs text-gray-500">No out of office in the next 10 days</p>
+                      </div>
+
+                      <div className="bg-white border border-gray-200 rounded-xl p-4">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">New Hires (0)</p>
+                        <p className="text-xs text-gray-500">No new hires this week</p>
+                      </div>
+
+                      <div className="bg-white border border-gray-200 rounded-xl p-4">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Work Anniversaries (2)</p>
+                        <div className="space-y-3">
+                          {[
+                            { name: 'Natalie Jackson', dept: 'Engineering', date: '7 years on 03/26/2026', avatar: '6' },
+                            { name: 'Morgan Williams', dept: 'Engineering', date: '1 year on 03/27/2026', initials: 'MW' },
+                          ].map((person, i) => (
+                            <div key={i} className="flex items-center gap-2.5">
+                              {person.avatar ? (
+                                <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shrink-0">
+                                  <img src={`https://picsum.photos/seed/user${person.avatar}/100/100`} alt={person.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                </div>
+                              ) : (
+                                <div className="w-8 h-8 rounded-full bg-[#7A005D]/10 flex items-center justify-center text-[10px] font-bold text-[#7A005D] shrink-0">{person.initials}</div>
+                              )}
+                              <div>
+                                <p className="text-xs font-bold text-gray-900">{person.name}</p>
+                                <p className="text-[10px] text-gray-500">{person.dept}</p>
+                                <p className="text-[10px] text-gray-400">{person.date}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="bg-white border border-gray-200 rounded-xl p-4">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Birthdays (3)</p>
+                        <div className="space-y-3">
+                          {[
+                            { name: 'Hannah Walton', dept: 'Customer Support', date: '03/26/2026', avatar: '30' },
+                            { name: 'Ashley Jones', dept: 'Engineering', date: '03/28/2026', avatar: '31' },
+                            { name: 'Erika Rodriguez', dept: 'Engineering', date: '03/31/2026', avatar: '32' },
+                          ].map((person, i) => (
+                            <div key={i} className="flex items-center gap-2.5">
+                              <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shrink-0">
+                                <img src={`https://picsum.photos/seed/bday${person.avatar}/100/100`} alt={person.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                              </div>
+                              <div>
+                                <p className="text-xs font-bold text-gray-900">{person.name}</p>
+                                <p className="text-[10px] text-gray-500">{person.dept}</p>
+                                <p className="text-[10px] text-gray-400">{person.date}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                (() => {
+                  const hrDocs = documentData.filter(row => row.category === 'HR Management');
+                  const statusCfg: Record<string, { dot: string; text: string; bg: string }> = { Signed: { dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50' }, Pending: { dot: 'bg-orange-500', text: 'text-orange-700', bg: 'bg-orange-50' }, Expired: { dot: 'bg-red-500', text: 'text-red-700', bg: 'bg-red-50' }, Archived: { dot: 'bg-gray-400', text: 'text-gray-600', bg: 'bg-gray-100' }, Uploaded: { dot: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50' } };
+                  const updateLabel: Record<string, string> = { sent: 'Sent', opened: 'Last opened', signed: 'Signed' };
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2"><h2 className="text-lg font-bold text-gray-900">Documents</h2><span className="text-xs text-gray-400 font-medium">{hrDocs.length}</span></div>
+                      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                        <table className="w-full text-left border-collapse table-fixed">
+                          <thead><tr className="bg-gray-50 border-b border-gray-200"><th style={{width:'24%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Document</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Employee</th><th style={{width:'18%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Envelope</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tag</th><th style={{width:'10%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th><th style={{width:'14%'}} className="px-6 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Last Update</th></tr></thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {hrDocs.map((row, i) => { const s = statusCfg[row.docStatus] ?? statusCfg['Pending']; const env = row.envelopeId ? envelopeData[row.envelopeId] : null; return (
                               <tr key={i} className="hover:bg-gray-50/50 transition-colors">
                                 <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-[#7A005D]/10 flex items-center justify-center shrink-0"><FileText size={15} className="text-[#7A005D]" /></div><div className="min-w-0 flex-1 overflow-hidden"><p className="text-xs font-semibold text-gray-900 truncate">{row.doc}</p><p className="text-[10px] text-gray-400 mt-0.5">{row.docId}</p></div></div></td>
                                 <td className="px-6 py-4 overflow-hidden"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full overflow-hidden border border-gray-100 shrink-0"><img src={`https://picsum.photos/seed/user${row.avatar}/100/100`} alt={row.employee} className="w-full h-full object-cover" referrerPolicy="no-referrer" /></div><div className="min-w-0 overflow-hidden"><p className="text-xs font-bold text-gray-900 truncate">{row.employee}</p><p className="text-[10px] text-gray-500 truncate">{row.role}</p></div></div></td>
